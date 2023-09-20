@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+  <head>
+    <title>Novels Recommendation</title>
+  </head>
+  <body>
+    <h1>Recommend Novels for You</h1>
+    <label>Insert What You Like</label>
+      <!-- <select id="categorylist">
+          <option value="men">men</option>
+　　       <option value="women">women</option>
+　　       <option value="accessories">accessories</option>
+          <option value="all" selected>all</option>
+      </select> -->
+      <input type="text" id="term">
+      <button type="submit" id="search">SEARCH</button>
+    <div id="books"></div>
+
+    <script>
+      function insertNovels(data) {
+        const booksContainer = document.getElementById("books");
+        booksContainer.innerHTML = ""; // Clear previous books
+      
+        for (let i = 0; i < data.length; i++) {
+          const item = data[i];
+          const bookDiv = document.createElement("div");
+          bookDiv.className = "novel";
+          bookDiv.setAttribute("novel_num", i); 
+
+          const bookName = document.createElement("div");
+          bookName.className = "title";
+          bookName.textContent = item.title;
+
+          const author = document.createElement("div");
+          author.className = "author";
+          author.textContent = item.author;
+
+          const outline = document.createElement("div");
+          outline.className = "outline";
+          outline.textContent = item.outline;
+
+          const url = document.createElement("a");
+          url.className = "url";
+          url.href = item.url;
+          url.textContent = '前往閱讀';
+        
+          bookDiv.appendChild(bookName);
+          bookDiv.appendChild(author);
+          bookDiv.appendChild(outline);
+          bookDiv.appendChild(url);
+        
+        booksContainer.appendChild(bookDiv);
+      }
+    }
+
+    function fetchProducts(term) {
+      fetch("/novels/search_novel/?term=" + encodeURIComponent(term))
+        .then(resp => resp.json())
+        .then(data => insertNovels(data))
+        .catch(error => console.error("Error fetching products:", error));
+    }
+
+    const search_novel = document.getElementById("search");
+    search_novel.addEventListener("click", () => {
+        const term = document.getElementById("term").value;
+        fetchProducts(term)
+    })
+
+//     const productsContainer = document.getElementById("products");
+//   productsContainer.addEventListener('click', (event) => {
+//     const clickedElement = event.target;
+//     if (clickedElement.classList.contains('product')) {
+//       const item_id = clickedElement.getAttribute('product-item-id');
+//       window.location = `/recommendation?item_id=${item_id}`;
+//     }
+//   });
+    // const productDivs = document.querySelectorAll('.product');
+    //     productDivs.forEach(div => {
+    //         div.addEventListener('click', () => {
+    //             const item_id = div.getAttribute('product-item-id');
+    //             console.log(item_id);
+    //             window.location.href = `/recommendation?item_id=${item_id}`;
+    //         }, true);
+    //     });
+  
+    </script>
+  </body>
+</html>
