@@ -1,0 +1,213 @@
+import re
+import requests
+from bs4 import BeautifulSoup
+import json
+from opencc import OpenCC
+from elasticsearch import Elasticsearch
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+es_host = os.getenv('ES_host')
+es_usr = os.getenv('ES_usr')
+es_psw = os.getenv('ES_psw')
+es_ssl = os.getenv('ES_ssl')
+
+es = Elasticsearch(
+    f"https://{es_host}",
+    ssl_assert_fingerprint= es_ssl,
+    basic_auth=(es_usr, es_psw)
+    )
+
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    "Accept-Encoding":"gzip, deflate",
+    "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "DNT":"1",
+    "Connection": "close",
+    "Upgrade-Insecure-Requests":"1"
+}
+
+
+def get_content(url):
+    response = requests.get(url, headers=headers)
+    # response.Encoding = 'utf-8'
+    print(f'{response.status_code=}')
+    if response.status_code == 503:
+        print(response.content)
+    return response.content
+
+
+def get_jjwxc_novels(category_url):
+    html_content = get_content(category_url)
+    soup = BeautifulSoup(html_content, 'lxml')
+    try:
+        novel_links = soup.select('a[href*="onebook.php?novelid="]')
+        print(len(novel_links))
+        jjwxc = "https://www.jjwxc.net/"
+        for link in novel_links:
+            href = link['href']  # 提取href属性
+            url = jjwxc + href
+            body = crawler_jjwxc(url)
+            es.index(index='novels_info', body = body)
+        #print(links[0])
+        return "Done"
+    except Exception as e:
+        print(e)
+
+
+def get_jjwxc_categories(html_content):
+    soup = BeautifulSoup(html_content, 'lxml')
+    try:
+        categories_links = soup.select('#navbar a')
+        jjwxc = "https://www.jjwxc.net/"
+        links = []
+        for link in categories_links:
+            href = link['href']  # 提取href属性
+            url = jjwxc + href
+            links.append(url)
+        print(links)
+        return links
+    except Exception as e:
+        print(e)
+
+
+cc = OpenCC('s2twp')
+
+
+def crawler_jjwxc(url):
+    soup = BeautifulSoup(get_content(url), 'lxml')
+    try:
+        # 標題 
+        title = soup.select('h1')[0].text.strip()
+        title_tw = cc.convert(title)
+        # print(title_tw)
+        # 作者
+        author = soup.select('h2 span')[0].text.strip('作者：')
+        author_tw = cc.convert(author)
+        # print(author_tw)
+        # 字數
+        wordCount = int(soup.find('span', itemprop='wordCount').text.strip('字'))
+        # print(wordCount)
+        # 文案
+        novelintro = soup.select_one('#novelintro').text
+        novelintro_tw = cc.convert(novelintro)
+        # print(novelintro_tw)
+        # 標籤
+        tags = soup.select('.smallreadbody a[href*="bookbase.php?bq="]')
+        tags_tw = ','.join([cc.convert(tag.text) for tag in tags])
+        # print([cc.convert(tag.text) for tag in tags])
+        # print(tags_tw)
+        # 收藏數
+        collected = int(soup.find('span',  itemprop="collectedCount").text)
+        # print(collected)
+        # category
+        category = soup.find('span', itemprop="genre").text.strip()
+        category_tw = cc.convert(category)
+        # print(category_tw)
+    except Exception as e:
+        print(e)
+        return None
+    else:
+        body = {
+            'title': title_tw,
+            'author': author_tw,
+            'outline': novelintro_tw,
+            'category': category_tw,
+            'tags': tags_tw,
+            'words': wordCount,
+            'collectedCount': collected,
+            'url': url,
+            'website': 'jjwxc',
+        }
+        return body
+
+
+def crawler_sto(html_content):
+    soup = BeautifulSoup(html_content, 'lxml')
+    try:
+        # 小說
+        list_body = soup.select('.slistbody')
+        print(len(list_body))
+        # one = list_body[0].text.strip()
+        # print(one)
+        for body in list_body:
+            title_author = body.select('.t')[0].text.strip()
+            title, author = re.findall(r'《(.*)》作者：(.*)', title_author)[0]
+            title_tw = cc.convert(title)
+            author_tw = cc.convert(author)
+            # print(title_tw, author_tw)
+            outline = body.select('.i')[0].text.strip()
+            outline_tw = cc.convert(outline)
+            year = int(re.findall(r'Time：(\d+)年', body.select('.b')[0].text.split()[0])[0])
+            category = body.select('.b')[0].text.split()[1].strip("Class：")
+            category_tw = cc.convert(category)
+            # print(outline_tw, year, category_tw)
+            url = body.select_one('.t a')['href']
+            novel_url = "https://www.sto.cx"+url
+            # print(novel_url)
+            body = {
+            'title': title_tw,
+            'author': author_tw,
+            'outline': outline_tw,
+            'category': category_tw,
+            'year': year,
+            'url': novel_url,
+            'website': 'sto',
+            }
+            es.index(index='novels_info', body = body)
+        last_page = soup.select('.paginator a')[-1].attrs.get('disabled')
+        if last_page:
+            has_next_page = False
+        else:
+            has_next_page = True
+    except Exception as e:
+        print(e)
+        return None
+    else:
+        return {'has_next_page': has_next_page}
+
+
+def get_sto_category(html_content):
+    soup = BeautifulSoup(html_content, 'lxml')
+    try:
+        categories_links = soup.select('#showClass a')
+        sto = "https://www.sto.cx"
+        links = []
+        for link in categories_links:
+            href = link['href']  # 提取href属性
+            url = sto + href
+            links.append(url)
+        # print(links)
+        return links
+    except Exception as e:
+        print(e)
+
+
+def get_sto_page_url():
+    links = get_sto_category(get_content("https://www.sto.cx/sbn.aspx?c=0"))
+    for link in links:
+        i = 1
+        while True:
+            page_url = f'{link}&page={i}'
+            result = crawler_sto(get_content(page_url))
+            if result['has_next_page']:
+                i += 1
+            else:
+                break
+    
+
+#crawler(get_jjwxc_page("https://www.jjwxc.net/onebook.php?novelid=3546151"))
+
+
+def jjwxc():
+    category_links = get_jjwxc_categories(get_content("https://www.jjwxc.net/channeltoplist.php?channelid=17&str=124"))
+    for category_link in category_links:
+        get_jjwxc_novels(category_link)    
+
+
+if __name__ == '__main__':
+    # jjwxc()
+    # get_sto_page_url()
