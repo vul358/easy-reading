@@ -20,4 +20,5 @@ from django.urls import include, path
 urlpatterns = [
     path("novels/", include("novels.urls")),
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')), # django-allauth網址
 ]
