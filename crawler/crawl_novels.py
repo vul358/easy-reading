@@ -6,6 +6,7 @@ from opencc import OpenCC
 from elasticsearch import Elasticsearch
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -134,20 +135,53 @@ def crawler_sto(html_content):
         # one = list_body[0].text.strip()
         # print(one)
         for body in list_body:
+            # 標題 作者
+            sto = "https://www.sto.cx"
             title_author = body.select('.t')[0].text.strip()
             title, author = re.findall(r'《(.*)》作者：(.*)', title_author)[0]
             title_tw = cc.convert(title)
             author_tw = cc.convert(author)
-            # print(title_tw, author_tw)
-            outline = body.select('.i')[0].text.strip()
+            print(title_tw, author_tw)
+            # 完整大綱
+            intro = body.select('.i a')[0].get('onclick')
+            intro_url = re.findall(r"content: '(.*)}", intro)[0].strip("'")
+            outline_raw = BeautifulSoup(get_content(sto+intro_url),'lxml').select('body')[0].text.strip()
+            h3 = BeautifulSoup(get_content(sto+intro_url),'lxml').find('h3').text.strip()
+            outline = outline_raw.strip('立即阅读').strip(h3)
             outline_tw = cc.convert(outline)
+            # print(outline_tw)
+            # 內容標籤
+            match = re.search(r'內容標籤：(.*)主角：', outline_tw)
+            match_2 = re.search(r'內容標簽：(.*)主角：', outline_tw) 
+            if match:
+                tag = match.group(1).strip()
+            elif match_2:
+                tag = match_2.group(1).strip()
+            else:
+                tag = ""
+            print(tag)
+            # 年份
             year = int(re.findall(r'Time：(\d+)年', body.select('.b')[0].text.split()[0])[0])
+            # 日期
+            date_text = body.select('.b')[0].text.split()[0].strip('Time：')
+            date = datetime.strptime(date_text, "%Y年%m月%d日").strftime("%Y-%m-%d")
+            # 類別
             category = body.select('.b')[0].text.split()[1].strip("Class：")
             category_tw = cc.convert(category)
-            # print(outline_tw, year, category_tw)
+            # 文檔大小
+            size = int(body.select('.b')[0].text.split()[2].strip("Size：").strip('k'))
+            # print(size)
+            # url
             url = body.select_one('.t a')['href']
-            novel_url = "https://www.sto.cx"+url
+            novel_url = sto + url
             # print(novel_url)
+            # 評論數量
+            novel_id = re.findall(r'id=(.*)', intro_url)[0]
+            comment_url = "https://www.sto.cx/User/comment.aspx?id="+ novel_id
+            comment_text = BeautifulSoup(get_content(comment_url),'lxml').select('.comtLT .fr')[0].text.strip()
+            comment_num = int(re.findall(r'共(\d+)條', comment_text)[0].strip())
+            # print(comment_num)
+            # break
             body = {
             'title': title_tw,
             'author': author_tw,
@@ -208,6 +242,6 @@ def jjwxc():
         get_jjwxc_novels(category_link)    
 
 
-if __name__ == '__main__':
-    # jjwxc()
-    # get_sto_page_url()
+# if __name__ == '__main__':
+#     jjwxc()
+#     get_sto_page_url()
