@@ -1,4 +1,5 @@
 import re
+import redis
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -9,6 +10,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 
 load_dotenv()
+
+r = redis.Redis(host='localhost', port=6379, decode_responses=True) 
 
 es_host = os.getenv('ES_host')
 es_usr = os.getenv('ES_usr')
@@ -122,7 +125,7 @@ def crawler_jjwxc(url):
             'collectedCount': collected,
             'url': url,
             'website': 'jjwxc',
-        }
+        }        
         return body
 
 
@@ -190,8 +193,11 @@ def crawler_sto(html_content):
             'year': year,
             'url': novel_url,
             'website': 'sto',
-            }
-            es.index(index='novels_info', body = body)
+            } 
+            novel = title_tw + author_tw 
+            if r.get(f'{novel}') is None:
+                r.set(f'{novel}', f'{url}')
+                es.index(index='novels_info', body = body)
         last_page = soup.select('.paginator a')[-1].attrs.get('disabled')
         if last_page:
             has_next_page = False
