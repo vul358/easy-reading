@@ -8,8 +8,11 @@ from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
 from build_index import es
 
+
 r = redis.Redis(host='localhost', port=6379, decode_responses=True) 
-# r.flushdb() 
+
+
+yesterday_tw = (datetime.utcnow() - timedelta(hours=16)).date()
 
 
 headers = {
@@ -22,6 +25,9 @@ headers = {
 }
 
 
+class StopCrawling(Exception):
+    pass
+
 def get_content(url):
     response = requests.get(url, headers=headers)
     print(f'{response.status_code=}')
@@ -30,89 +36,7 @@ def get_content(url):
     return response.content
 
 
-def get_jjwxc_novels(category_url):
-    html_content = get_content(category_url)
-    soup = BeautifulSoup(html_content, 'lxml')
-    try:
-        novel_links = soup.select('a[href*="onebook.php?novelid="]')
-        print(len(novel_links))
-        jjwxc = "https://www.jjwxc.net/"
-        for link in novel_links:
-            href = link['href']  # 提取href属性
-            url = jjwxc + href
-            body = crawler_jjwxc(url)
-            es.index(index='novels_info', body = body)
-        #print(links[0])
-        return "Done"
-    except Exception as e:
-        print(e)
-
-
-def get_jjwxc_categories(html_content):
-    soup = BeautifulSoup(html_content, 'lxml')
-    try:
-        categories_links = soup.select('#navbar a')
-        jjwxc = "https://www.jjwxc.net/"
-        links = []
-        for link in categories_links:
-            href = link['href']  # 提取href属性
-            url = jjwxc + href
-            links.append(url)
-        print(links)
-        return links
-    except Exception as e:
-        print(e)
-
-
 cc = OpenCC('s2twp')
-
-
-def crawler_jjwxc(url):
-    soup = BeautifulSoup(get_content(url), 'lxml')
-    try:
-        # 標題 
-        title = soup.select('h1')[0].text.strip()
-        title_tw = cc.convert(title)
-        # print(title_tw)
-        # 作者
-        author = soup.select('h2 span')[0].text.strip('作者：')
-        author_tw = cc.convert(author)
-        # print(author_tw)
-        # 字數
-        wordCount = int(soup.find('span', itemprop='wordCount').text.strip('字'))
-        # print(wordCount)
-        # 文案
-        novelintro = soup.select_one('#novelintro').text
-        novelintro_tw = cc.convert(novelintro)
-        # print(novelintro_tw)
-        # 標籤
-        tags = soup.select('.smallreadbody a[href*="bookbase.php?bq="]')
-        tags_tw = ','.join([cc.convert(tag.text) for tag in tags])
-        # print([cc.convert(tag.text) for tag in tags])
-        # print(tags_tw)
-        # 收藏數
-        collected = int(soup.find('span',  itemprop="collectedCount").text)
-        # print(collected)
-        # category
-        category = soup.find('span', itemprop="genre").text.strip()
-        category_tw = cc.convert(category)
-        # print(category_tw)
-    except Exception as e:
-        print(e)
-        return None
-    else:
-        body = {
-            'title': title_tw,
-            'author': author_tw,
-            'outline': novelintro_tw,
-            'category': category_tw,
-            'tags': tags_tw,
-            'words': wordCount,
-            'collectedCount': collected,
-            'url': url,
-            'website': 'jjwxc',
-        }        
-        return body
 
 
 def crawler_sto(html_content):
@@ -131,16 +55,14 @@ def crawler_sto(html_content):
             title_tw = cc.convert(title)
             author_tw = cc.convert(author)
             print(title_tw, author_tw)
-             # 如果有詳細介紹：
+            # 如果有詳細介紹：
             content = body.select('.i a')
             if content:
                 intro = content[0].get('onclick')
-                # 完整大綱
+            # 完整大綱
                 intro_url = re.findall(r"content: '(.*)}", intro)[0].strip("'")
-                intro_body = BeautifulSoup(get_content(sto+intro_url),'lxml')
-                outline_raw = intro_body.select('body')[0].text.strip()
-                h3 = intro_body.find('h3')
-                h3 = h3.text.strip() if h3 else ''
+                outline_raw = BeautifulSoup(get_content(sto+intro_url),'lxml').select('body')[0].text.strip()
+                h3 = BeautifulSoup(get_content(sto+intro_url),'lxml').find('h3').text.strip()
                 outline = outline_raw.strip('立即阅读').strip(h3)
                 outline_tw = cc.convert(outline)
                 # print(outline_tw)
@@ -178,29 +100,38 @@ def crawler_sto(html_content):
             try:
                 novel_id = re.findall(r'book-(\d+)-', novel_url)[0]
             except:
-                novel_id = re.findall(r'bid=(\d+)', novel_url)[0]
+                novel_id = re.findall(r'bid=(\d+)&', novel_url)[0]
             comment_url = "https://www.sto.cx/User/comment.aspx?id="+ novel_id
             comment_text = BeautifulSoup(get_content(comment_url),'lxml').select('.comtLT .fr')[0].text.strip()
             comment_num = int(re.findall(r'共(\d+)條', comment_text)[0].strip())
             print(f'評論數量：{comment_num}')
             # break
             body = {
-                'title': title_tw,
-                'author': author_tw,
-                'outline': outline_tw,
-                'category': category_tw,
-                'tags': tags,
-                'year': year,
-                'url': novel_url,
-                'website': 'sto',
-                'size': size,
-                'comment': comment_num,
-                'date': date,
+            'title': title_tw,
+            'author': author_tw,
+            'outline': outline_tw,
+            'category': category_tw,
+            'tags': tags,
+            'year': year,
+            'url': novel_url,
+            'website': 'sto',
+            'size': size,
+            'comment': comment_num,
+            'date': date,
             } 
             novel = title_tw + author_tw 
+            print(novel)
             if r.get(f'{novel}') is None:
                 r.set(f'{novel}', f'{url}')
-                es.index(index='sto_novels_info', body = body)
+                novel_date = datetime.strptime(date,"%Y-%m-%d").date()
+                print(novel_date)
+                if novel_date > yesterday_tw:
+                    pass
+                elif novel_date == yesterday_tw:
+                    es.index(index='sto_novels_info', body = body)
+                    print(f'{date}-{category}-進入資料庫')
+                else:
+                    raise StopCrawling
         last_page = soup.select('.paginator a')[-1].attrs.get('disabled')
         if last_page:
             has_next_page = False
@@ -231,7 +162,7 @@ def get_sto_category(html_content):
 
 def get_sto_page_url():
     links = get_sto_category(get_content("https://www.sto.cx/sbn.aspx?c=0"))
-    for link in links[-1:]:
+    for link in links:
         i = 1
         while True:
             page_url = f'{link}&page={i}'
@@ -240,16 +171,8 @@ def get_sto_page_url():
                 i += 1
             else:
                 break
-    
-
-#crawler(get_jjwxc_page("https://www.jjwxc.net/onebook.php?novelid=3546151"))
-
-
-def jjwxc():
-    category_links = get_jjwxc_categories(get_content("https://www.jjwxc.net/channeltoplist.php?channelid=17&str=124"))
-    for category_link in category_links:
-        get_jjwxc_novels(category_link)    
 
 
 if __name__ == '__main__':
     get_sto_page_url()
+    r.flushdb() 
