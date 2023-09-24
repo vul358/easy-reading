@@ -157,12 +157,12 @@ def crawler_sto(html_content):
             match = re.search(r'內容標籤：(.*)主角：', outline_tw)
             match_2 = re.search(r'內容標簽：(.*)主角：', outline_tw) 
             if match:
-                tag = match.group(1).strip()
+                tags = match.group(1).strip()
             elif match_2:
-                tag = match_2.group(1).strip()
+                tags = match_2.group(1).strip()
             else:
-                tag = ""
-            print(tag)
+                tags = ""
+            print(tags)
             # 年份
             year = int(re.findall(r'Time：(\d+)年', body.select('.b')[0].text.split()[0])[0])
             # 日期
@@ -190,9 +190,13 @@ def crawler_sto(html_content):
             'author': author_tw,
             'outline': outline_tw,
             'category': category_tw,
+            'tags': tags,
             'year': year,
             'url': novel_url,
             'website': 'sto',
+            'size': size,
+            'comment': comment_num,
+            'date': date,
             } 
             novel = title_tw + author_tw 
             if r.get(f'{novel}') is None:
