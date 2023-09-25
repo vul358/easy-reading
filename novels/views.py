@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterForm
 from django.contrib import auth
+from elasticsearch_dsl import Q
 
 
 def index(request):
@@ -65,7 +66,43 @@ def search_novel(request):
             results.append(result)    
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
-    
+
+
+def search_author(request):
+    if request.method == 'GET':
+        author = request.GET['author']
+        title = request.GET['title']
+        author_query = Q('match', author = author)
+        title_query = Q('match', title= title )
+        s = NovelsDocument.search().query('bool',  must=[author_query], must_not=[title_query])
+        results = []
+        for hit in s:
+            if hit.tags == "":
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                }
+            else:
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "tags": hit.tags,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                }
+            results.append(result)
+        if len(results) == 0:
+                not_found =  { 
+                    "title": f"抱歉書庫中尚未有{author}的其他作品",
+                    "outline": "小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試" }
+                results = JsonResponse( not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+                return results
+        else:
+            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return results
+
 
 def test_api(request):
     new_obj = Test()
