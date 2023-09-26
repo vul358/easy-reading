@@ -11,6 +11,7 @@ from django.contrib import auth
 from elasticsearch_dsl import Q
 import json
 from django.views.decorators.csrf import csrf_exempt
+from collections import defaultdict
 
 
 def index(request):
@@ -189,8 +190,45 @@ def mark(request):
             check.bookshelf = bookshelf_status
             check.save()
         return HttpResponse("status:success")
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError as e: 
         return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)
+
+
+def bookshelf(request):
+    if request.method == 'GET':
+        bookshelf = request.GET['bookshelf']
+        user = request.GET['user_id']  
+        books = Bookshelf.objects.filter(user_id=user)
+        if bookshelf == "pending" or bookshelf == "blocked":
+            no_folder = []
+            for book in books:
+                novel_id = book.novel_id
+                novel = ChosenNovels.objects.filter(id=novel_id).first()
+                result = {
+                    "title": novel.title,
+                    "author": novel.author,
+                    "outline": novel.outline,
+                    "category": novel.category,
+                    "url": novel.url
+                }
+                no_folder.append(result)
+            results = JsonResponse(no_folder, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        else:
+            folders = defaultdict(list)
+            for book in books:
+                novel_id = book.novel_id
+                folder_name = book.folder
+                novel = ChosenNovels.objects.filter(id=novel_id).first()
+                folder = {
+                    "title": novel.title,
+                    "author": novel.author,
+                    "outline": novel.outline,
+                    "category": novel.category,
+                    "url": novel.url
+                }
+                folders[folder_name].append(folder)
+            results = JsonResponse(folders, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        return results
 
 
 def test_api(request):
