@@ -29,10 +29,11 @@ class NovelsInfo(models.Model):
     outline = models.TextField()    
     category = models.CharField(max_length=200)
     tags = models.CharField(max_length=200)
-    words = models.IntegerField()
     year = models.IntegerField()
-    collectedCount = models.IntegerField()
     url = models.TextField()  
     website = models.CharField(max_length=200)
+    comment = models.IntegerField()
+    size = models.IntegerField()
+    date = models.DateField() 
                 
      
