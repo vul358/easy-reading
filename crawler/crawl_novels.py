@@ -127,7 +127,7 @@ def crawler_sto(html_content):
             # 標題 作者
             sto = "https://www.sto.cx"
             title_author = body.select('.t')[0].text.strip()
-            title, author = re.findall(r'《(.*)》作者：(.*)', title_author)[0]
+            title, author = re.findall(r'《(.*)》作者：(.*)\(', title_author)[0]
             title_tw = cc.convert(title)
             author_tw = cc.convert(author)
             print(title_tw, author_tw)

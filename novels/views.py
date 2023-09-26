@@ -56,14 +56,23 @@ def search_novel(request):
         term = request.GET['term']
         s = NovelsDocument.search().query("match", outline = term)
         results =[]
-        for hit in s[0:3]:
-            result = {
-                "title": hit.title,
-                "author": hit.author,
-                "outline": hit.outline,
-                "url": hit.url
-            }
-            results.append(result)    
+        for hit in s[:3]:
+            if hit.tags == "":
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                }
+            else:
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "tags": hit.tags,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                }
+            results.append(result) 
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
 
@@ -102,6 +111,37 @@ def search_author(request):
         else:
             results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
             return results
+
+
+def search_category(request):
+    if request.method == 'GET':
+        category = request.GET['category']
+        tag = request.GET['tag']
+        s = NovelsDocument.search().query("bool", must=[
+            {"match":{"category":category}},
+            {"match":{"tags":tag}}
+            ])
+        s = s.sort({"comment": {"order":"desc"}})
+        results =[]
+        for hit in s[0:3]:
+            if hit.tags == "":
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                    }
+            else:
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "tags": hit.tags,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                    }
+            results.append(result)  
+        results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        return results
 
 
 def test_api(request):
