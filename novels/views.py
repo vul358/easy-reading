@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.http import JsonResponse #剛剛的JsonResponse套件
-from .models import ChosenNovels
+from django.http import JsonResponse 
+from .models import ChosenNovels, Bookshelf
 from .documents import NovelsDocument
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterForm
 from django.contrib import auth
 from elasticsearch_dsl import Q
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -150,6 +152,45 @@ def search_category(request):
             results.append(result)  
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
+
+
+@csrf_exempt
+def mark(request):
+    try:
+        body = request.body
+        # 轉換成JSON
+        novel = json.loads(body.decode('utf-8'))
+        title = novel['title']
+        author = novel['author']
+        existing_book = ChosenNovels.objects.filter(title=title, author=author).first()
+        if existing_book:
+            novel_id = existing_book.id
+        else:
+            book = ChosenNovels()
+            book.title = title
+            book.author = author
+            book.outline = novel['outline']
+            book.url = novel['url']
+            book.category = novel['category']
+            book.save()
+            novel_id = book.id
+        user = novel['user_id']
+        check = Bookshelf.objects.filter(user_id=user, novel_id=novel_id).first()
+        bookshelf_status = novel['bookshelf']
+        if not check:
+            bookshelf = Bookshelf()
+            bookshelf.bookshelf = bookshelf_status
+            bookshelf.novel_id = novel_id
+            bookshelf.user_id = user
+            bookshelf.save()
+        if check.bookshelf == bookshelf_status:
+            pass
+        else:
+            check.bookshelf = bookshelf_status
+            check.save()
+        return HttpResponse("status:success")
+    except json.JSONDecodeError as e:
+        return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)
 
 
 def test_api(request):

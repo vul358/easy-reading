@@ -10,9 +10,9 @@ class ChosenNovels(models.Model):
     category = models.CharField(max_length=200)
 
 
-class bookshelf(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    novel_id = models.ForeignKey(ChosenNovels, on_delete=models.CASCADE)
+class Bookshelf(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    novel = models.ForeignKey(ChosenNovels, on_delete=models.CASCADE)
     bookshelf = models.CharField(max_length=200)
     folder = models.CharField(max_length=200)
 

@@ -115,6 +115,12 @@
           outline.className = "outline";
           outline.textContent = item.outline;
 
+          const tags = document.createElement("div");
+          tags.className = "tags";
+          if (item.tags){
+            tags.textContent = item.tags
+          }
+          
           const url = document.createElement("a");
           url.className = "url";
           url.href = item.url;
@@ -122,6 +128,7 @@
         
           bookDiv.appendChild(bookName);
           bookDiv.appendChild(author);
+          bookDiv.appendChild(tags)
           bookDiv.appendChild(outline);
           bookDiv.appendChild(url);
         
@@ -164,6 +171,12 @@
           novelauthor.className = "author";
           novelauthor.textContent = novel.author;
 
+          const noveltags = document.createElement("div");
+          noveltags.className = "tags";
+          if (novel.tags) {
+            noveltags.textContent = novel.tags
+          }
+          
           const noveloutline = document.createElement("div");
           noveloutline.className = "outline";
           noveloutline.textContent = novel.outline;
@@ -178,6 +191,7 @@
         //   novelDiv.appendChild(authorDiv);
           novelDiv.appendChild(novelName);
           novelDiv.appendChild(novelauthor);
+          novelDiv.appendChild(noveltags);
           novelDiv.appendChild(noveloutline);
           novelDiv.appendChild(novelurl);
         
@@ -221,6 +235,12 @@
           cnauthor.className = "author";
           cnauthor.textContent = category.author;
 
+          const cntags = document.createElement("div");
+          cntags.className = "tags";
+          if (category.tags) {
+            cntags.textContent = category.tags;
+          }
+
           const cnoutline = document.createElement("div");
           cnoutline.className = "outline";
           cnoutline.textContent = category.outline;
@@ -233,6 +253,7 @@
         //   categoryDiv.appendChild(cnDiv);
           categoryDiv.appendChild(cnName);
           categoryDiv.appendChild(cnauthor);
+          categoryDiv.appendChild(cntags);
           categoryDiv.appendChild(cnoutline);
           categoryDiv.appendChild(cnurl);
         
