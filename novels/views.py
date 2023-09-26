@@ -103,10 +103,10 @@ def search_author(request):
                 }
             results.append(result)
         if len(results) == 0:
-                not_found =  { 
+                not_found = [{ 
                     "title": f"抱歉書庫中尚未有{author}的其他作品",
-                    "outline": "小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試" }
-                results = JsonResponse( not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+                    "author": "小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試" }]
+                results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
                 return results
         else:
             results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -117,10 +117,18 @@ def search_category(request):
     if request.method == 'GET':
         category = request.GET['category']
         tag = request.GET['tag']
-        s = NovelsDocument.search().query("bool", must=[
-            {"match":{"category":category}},
-            {"match":{"tags":tag}}
-            ])
+        title = request.GET['title']
+        # s = NovelsDocument.search().query("bool", must=[
+        #     {"match":{"category":category}},
+        #     {"match":{"tags":tag}}
+        #     ])
+        if title:
+            bool_query = Q('bool', must=[Q('match', category=category)], must_not=[Q('match', title=title)])
+        else:
+            bool_query = Q('bool', must=[Q('match', category=category)])
+        if tag:
+            bool_query.should.append(Q('match', tags=tag))
+        s = NovelsDocument.search().query(bool_query)
         s = s.sort({"comment": {"order":"desc"}})
         results =[]
         for hit in s[0:3]:
