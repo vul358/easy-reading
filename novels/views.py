@@ -66,6 +66,7 @@ def search_novel(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                 }
             else:
                 result = {
@@ -74,6 +75,7 @@ def search_novel(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                 }
             results.append(result) 
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -179,16 +181,15 @@ def mark(request):
         check = Bookshelf.objects.filter(user_id=user, novel_id=novel_id).first()
         bookshelf_status = novel['bookshelf']
         if not check:
-            bookshelf = Bookshelf()
-            bookshelf.bookshelf = bookshelf_status
-            bookshelf.novel_id = novel_id
-            bookshelf.user_id = user
-            bookshelf.save()
-        if check.bookshelf == bookshelf_status:
-            pass
+            bookshelf_object = Bookshelf()
+            bookshelf_object.bookshelf = bookshelf_status
+            bookshelf_object.novel_id = novel_id
+            bookshelf_object.user_id = user
+            bookshelf_object.save()
         else:
-            check.bookshelf = bookshelf_status
-            check.save()
+            if check.bookshelf != bookshelf_status:
+                check.bookshelf = bookshelf_status
+                check.save()
         return HttpResponse("status:success")
     except json.JSONDecodeError as e: 
         return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)

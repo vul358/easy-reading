@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <html>
   <head>
     <title>網路小說推薦器</title>
@@ -91,6 +92,9 @@
       <input type="text" id="term">
       <button type="submit" id="search">推薦好書</button>
     <div id="books"></div>
+    <!-- <button type="button" class="btn btn-default" aria-label="Left Align">
+        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    </button> -->
 
     <script>
       function insertBooks(data) {
@@ -125,12 +129,83 @@
           url.className = "url";
           url.href = item.url;
           url.textContent = '前往閱讀';
-        
+
+          function bookMark(data) {
+            const api = "http://127.0.0.1:8000/novels/mark/";
+            fetch(api, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+          }
+
+          const icon = document.createElement("span");
+          icon.className = "glyphicon glyphicon-star-empty";
+          icon.addEventListener("click", function(){
+            icon.className = "glyphicon glyphicon-star";
+            iconRemove.className = "glyphicon glyphicon-remove-circle";
+            // if (icon.className ==  "glyphicon glyphicon-star-empty"){
+            //     icon.className = "glyphicon glyphicon-star";
+            // } else{
+            //     icon.className = "glyphicon glyphicon-star-empty";
+            // }
+
+            const data = {
+                "user_id": 2,
+                "bookshelf": "pending",
+                "title": item.title,
+                "author": item.author,
+                "outline": item.outline,
+                "url": item.url,
+                "category": item.category
+            };
+            bookMark(data);          
+          });
+
+          const iconRemove = document.createElement("span");
+          iconRemove.className = "glyphicon glyphicon-remove-circle";
+          iconRemove.addEventListener("click", function(){
+            iconRemove.className = "glyphicon glyphicon-remove-sign";
+            icon.className = "glyphicon glyphicon-star-empty"
+            // if (icon.className ==  "glyphicon glyphicon-star-empty"){
+            //     icon.className = "glyphicon glyphicon-star";
+            // } else{
+            //     icon.className = "glyphicon glyphicon-star-empty";
+            // }
+
+            const data = {
+                "user_id": 2,
+                "bookshelf": "blocked",
+                "title": item.title,
+                "author": item.author,
+                "outline": item.outline,
+                "url": item.url,
+                "category": item.category
+            };
+            bookMark(data);  
+          });
+
           bookDiv.appendChild(bookName);
           bookDiv.appendChild(author);
           bookDiv.appendChild(tags)
           bookDiv.appendChild(outline);
           bookDiv.appendChild(url);
+          bookDiv.appendChild(icon);
+          bookDiv.appendChild(iconRemove);
         
         booksContainer.appendChild(bookDiv);
       }
