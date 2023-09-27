@@ -7,6 +7,11 @@
     <title>網路小說推薦器</title>
   </head>
   <body>
+    <a href="/novels/logout/" class="btn btn-primary">登出</a>
+    <a href="{% url 'my_bookshelf' user_id=user_id %}" class="btn btn-primary">我的書櫃</a>
+    {% if user_id %}
+    <p>Welcome，{{ username }}！ </p>
+    {% endif %}
     <h1>今天想看什麼書？為你推薦>></h1>
     <label>輸入種子小說書名</label>
     <input type="text" id="title">
@@ -92,11 +97,10 @@
       <input type="text" id="term">
       <button type="submit" id="search">推薦好書</button>
     <div id="books"></div>
-    <!-- <button type="button" class="btn btn-default" aria-label="Left Align">
-        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-    </button> -->
+
 
     <script>
+      var user = '{{ user_id }}';
       function insertBooks(data) {
         const booksContainer = document.getElementById("books");
         booksContainer.innerHTML = ""; // Clear previous books
@@ -118,6 +122,10 @@
           const outline = document.createElement("div");
           outline.className = "outline";
           outline.textContent = item.outline;
+
+          const cat = document.createElement("div");
+          cat.className = "category";
+          cat.textContent = item.category;
 
           const tags = document.createElement("div");
           tags.className = "tags";
@@ -165,7 +173,7 @@
             // }
 
             const data = {
-                "user_id": 2,
+                "user_id": user,
                 "bookshelf": "pending",
                 "title": item.title,
                 "author": item.author,
@@ -188,7 +196,7 @@
             // }
 
             const data = {
-                "user_id": 2,
+                "user_id": user,
                 "bookshelf": "blocked",
                 "title": item.title,
                 "author": item.author,
@@ -201,6 +209,7 @@
 
           bookDiv.appendChild(bookName);
           bookDiv.appendChild(author);
+          bookDiv.appendChild(cat);
           bookDiv.appendChild(tags)
           bookDiv.appendChild(outline);
           bookDiv.appendChild(url);
@@ -227,7 +236,7 @@
 
     function insertNovels(data) {
         const novelsContainer = document.getElementById("novels");
-        // novelsContainer.innerHTML = ""; // Clear previous books
+        novelsContainer.innerHTML = ""; // Clear previous books
       
         for (let i = 0; i < data.length; i++) {
           const novel = data[i];
@@ -262,6 +271,64 @@
             novelurl.href = novel.url;
             novelurl.textContent = '前往閱讀';
         } 
+
+        function bookMark(data) {
+            const api = "http://127.0.0.1:8000/novels/mark/";
+            fetch(api, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+          }
+
+          const novelicon = document.createElement("span");
+          novelicon.className = "glyphicon glyphicon-star-empty";
+          novelicon.addEventListener("click", function(){
+            novelicon.className = "glyphicon glyphicon-star";
+            noveliconRemove.className = "glyphicon glyphicon-remove-circle";
+
+            const data = {
+                "user_id": user,
+                "bookshelf": "pending",
+                "title": novel.title,
+                "author": novel.author,
+                "outline": novel.outline,
+                "url": novel.url,
+                "category": novel.category
+            };
+            bookMark(data);          
+          });
+
+          const noveliconRemove = document.createElement("span");
+          noveliconRemove.className = "glyphicon glyphicon-remove-circle";
+          noveliconRemove.addEventListener("click", function(){
+            noveliconRemove.className = "glyphicon glyphicon-remove-sign";
+            novelicon.className = "glyphicon glyphicon-star-empty"
+            const data = {
+                "user_id": user,
+                "bookshelf": "blocked",
+                "title": novel.title,
+                "author": novel.author,
+                "outline": novel.outline,
+                "url": novel.url,
+                "category": novel.category
+            };
+            bookMark(data);  
+          });
         
         //   novelDiv.appendChild(authorDiv);
           novelDiv.appendChild(novelName);
@@ -269,6 +336,9 @@
           novelDiv.appendChild(noveltags);
           novelDiv.appendChild(noveloutline);
           novelDiv.appendChild(novelurl);
+          novelDiv.appendChild(novelicon);
+          novelDiv.appendChild(noveliconRemove);
+
         
         novelsContainer.appendChild(novelDiv);
       }
@@ -291,10 +361,10 @@
 
     function insertCategory(data) {
         const categoriesContainer = document.getElementById("categories");
-        // categoriesContainer.innerHTML = ""; // Clear previous books
+        categoriesContainer.innerHTML = ""; // Clear previous books
       
         for (let i = 0; i < data.length; i++) {
-          const category = data[i];
+          const cn = data[i];
           const categoryDiv = document.createElement("div");
           categoryDiv.className = "novel_c";
           categoryDiv.setAttribute("novel_c_num", i); 
@@ -304,26 +374,84 @@
 
           const cnName = document.createElement("div");
           cnName.className = "title";
-          cnName.textContent = category.title;
+          cnName.textContent = cn.title;
 
           const cnauthor = document.createElement("div");
           cnauthor.className = "author";
-          cnauthor.textContent = category.author;
+          cnauthor.textContent = cn.author;
 
           const cntags = document.createElement("div");
           cntags.className = "tags";
           if (category.tags) {
-            cntags.textContent = category.tags;
+            cntags.textContent = cn.tags;
           }
 
           const cnoutline = document.createElement("div");
           cnoutline.className = "outline";
-          cnoutline.textContent = category.outline;
+          cnoutline.textContent = cn.outline;
 
           const cnurl = document.createElement("a");
           cnurl.className = "url";
-          cnurl.href = category.url;
+          cnurl.href = cn.url;
           cnurl.textContent = '前往閱讀';
+
+          function bookMark(data) {
+            const api = "http://127.0.0.1:8000/novels/mark/";
+            fetch(api, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+          }
+
+          const cnicon = document.createElement("span");
+          cnicon.className = "glyphicon glyphicon-star-empty";
+          cnicon.addEventListener("click", function(){
+            cnicon.className = "glyphicon glyphicon-star";
+            cniconRemove.className = "glyphicon glyphicon-remove-circle";
+
+            const data = {
+                "user_id": user,
+                "bookshelf": "pending",
+                "title": cn.title,
+                "author": cn.author,
+                "outline": cn.outline,
+                "url": cn.url,
+                "category": cn.category
+            };
+            bookMark(data);          
+          });
+
+          const cniconRemove = document.createElement("span");
+          cniconRemove.className = "glyphicon glyphicon-remove-circle";
+          cniconRemove.addEventListener("click", function(){
+            cniconRemove.className = "glyphicon glyphicon-remove-sign";
+            cnicon.className = "glyphicon glyphicon-star-empty"
+            const data = {
+                "user_id": user,
+                "bookshelf": "blocked",
+                "title": cn.title,
+                "author": cn.author,
+                "outline": cn.outline,
+                "url": cn.url,
+                "category": cn.category
+            };
+            bookMark(data);  
+          });
         
         //   categoryDiv.appendChild(cnDiv);
           categoryDiv.appendChild(cnName);
@@ -331,6 +459,8 @@
           categoryDiv.appendChild(cntags);
           categoryDiv.appendChild(cnoutline);
           categoryDiv.appendChild(cnurl);
+          categoryDiv.appendChild(cnicon);
+          categoryDiv.appendChild(cniconRemove);
         
         categoriesContainer.appendChild(categoryDiv);
       }

@@ -12,10 +12,17 @@ from elasticsearch_dsl import Q
 import json
 from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
+from django.contrib.auth.decorators import login_required
 
 
+def home(request):
+    return render(request, 'home.html')
+
+@login_required
 def index(request):
-    return render(request, 'index.html')
+    user_id = request.user.id  # 获取当前登录用户的ID
+    username = request.user.username  # 获取当前登录用户的用户名
+    return render(request, 'index.html', {'user_id': user_id, 'username': username})
 
 
 def register(request):
@@ -39,19 +46,18 @@ def login(request):
         user = auth.authenticate(password=password, email=email)
         if user and user.is_staff is False:
             auth.login(request, user)
-            return redirect('/login/')
+            return redirect('/novels/')
         elif user and user.is_staff is True:
             auth.login(request, user)
-            return redirect('/quiz/')
+            return redirect('/novels/')
         else:
-            return redirect('/login/')
+            return redirect('/novels/login/')
     else:
         return render(request, 'login.html', locals())
 
 
 def logout(request):
-    logout(request)
-    return redirect('/login') #重新導向到登入畫面
+    return redirect('/novels/home') #重新導向到登入畫面
 
 
 def search_novel(request):
@@ -97,6 +103,7 @@ def search_author(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                 }
             else:
                 result = {
@@ -105,6 +112,7 @@ def search_author(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                 }
             results.append(result)
         if len(results) == 0:
@@ -143,6 +151,7 @@ def search_category(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                     }
             else:
                 result = {
@@ -151,6 +160,7 @@ def search_category(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
+                    "category": hit.category
                     }
             results.append(result)  
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -195,11 +205,11 @@ def mark(request):
         return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)
 
 
-def bookshelf(request):
+def bookshelfs(request):
     if request.method == 'GET':
         bookshelf = request.GET['bookshelf']
         user = request.GET['user_id']  
-        books = Bookshelf.objects.filter(user_id=user)
+        books = Bookshelf.objects.filter(user_id=user, bookshelf=bookshelf)
         if bookshelf == "pending" or bookshelf == "blocked":
             no_folder = []
             for book in books:
@@ -230,6 +240,10 @@ def bookshelf(request):
                 folders[folder_name].append(folder)
             results = JsonResponse(folders, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
+
+
+def my_bookshelf(request, user_id):
+    return render(request, 'bookshelf.html', {'user_id': user_id})
 
 
 def test_api(request):

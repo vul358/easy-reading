@@ -175,6 +175,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/novels/'  # 登入後的首頁網址
+LOGOUT_REDIRECT_URL = '/novels/'
 
 # All Authentication
 SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table

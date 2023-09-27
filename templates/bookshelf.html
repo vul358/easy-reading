@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的書櫃{{user_id}}</title>
+</head>
+<body>
+    <h1>待閱讀區</h1>
+    <div id="pending">
+        <!-- 書籍將在這裡動態加載 -->
+    </div>
+
+    <h1>黑名單隔離區</h1>
+    <div id="blocked">
+        <!-- 書籍將在這裡動態加載 -->
+    </div>
+
+    <script>
+        // 在頁面上顯示每本書的函數
+        function displayBook(book, bookshelfElement) {
+            const bookDiv = document.createElement("div");
+            bookDiv.innerHTML = `
+                <h2>${book.title}</h2>
+                <p><strong>作者:</strong> ${book.author}</p>
+                <p><strong>簡介:</strong> ${book.outline}</p>
+                <p><strong>類別:</strong> ${book.category}</p>
+                <a href="${book.url}" target="_blank">閱讀更多</a>
+                <hr>
+            `;
+            bookshelfElement.appendChild(bookDiv);
+        }
+
+        // 獲取書籍數據並顯示在頁面上的函數
+       
+        function loadBooks(bookshelf, user_id) {
+            // 書架元素
+            const bookshelfName = bookshelf
+            const bookshelfElement = document.getElementById(bookshelfName);
+            
+
+            // 使用fetch發送GET請求到API
+            fetch("/novels/bookshelfs/?bookshelf=" + encodeURIComponent(bookshelf) + "&user_id=" + encodeURIComponent(user_id))
+                .then(response => response.json())
+                .then(data => {
+                    // 迭代處理每本書
+                    data.forEach(book => {
+                        displayBook(book, bookshelfElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('獲取數據時出現錯誤:', error);
+                });
+        }
+        const user_id = '{{user_id}}';
+        loadBooks("pending", user_id);
+        loadBooks("blocked", user_id);
+
+
+    </script>
+</body>
+</html>
