@@ -101,6 +101,31 @@
 
     <script>
       var user = '{{ user_id }}';
+
+      function bookMark(data) {
+            const api = "http://127.0.0.1:8000/novels/mark/";
+            fetch(api, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+          }
+
+
       function insertBooks(data) {
         const booksContainer = document.getElementById("books");
         booksContainer.innerHTML = ""; // Clear previous books
@@ -138,39 +163,12 @@
           url.href = item.url;
           url.textContent = '前往閱讀';
 
-          function bookMark(data) {
-            const api = "http://127.0.0.1:8000/novels/mark/";
-            fetch(api, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("There was a problem with the fetch operation:", error);
-            });
-          }
 
           const icon = document.createElement("span");
           icon.className = "glyphicon glyphicon-star-empty";
           icon.addEventListener("click", function(){
             icon.className = "glyphicon glyphicon-star";
             iconRemove.className = "glyphicon glyphicon-remove-circle";
-            // if (icon.className ==  "glyphicon glyphicon-star-empty"){
-            //     icon.className = "glyphicon glyphicon-star";
-            // } else{
-            //     icon.className = "glyphicon glyphicon-star-empty";
-            // }
 
             const data = {
                 "user_id": user,
@@ -189,11 +187,6 @@
           iconRemove.addEventListener("click", function(){
             iconRemove.className = "glyphicon glyphicon-remove-sign";
             icon.className = "glyphicon glyphicon-star-empty"
-            // if (icon.className ==  "glyphicon glyphicon-star-empty"){
-            //     icon.className = "glyphicon glyphicon-star";
-            // } else{
-            //     icon.className = "glyphicon glyphicon-star-empty";
-            // }
 
             const data = {
                 "user_id": user,
@@ -271,29 +264,6 @@
             novelurl.href = novel.url;
             novelurl.textContent = '前往閱讀';
         } 
-
-        function bookMark(data) {
-            const api = "http://127.0.0.1:8000/novels/mark/";
-            fetch(api, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("There was a problem with the fetch operation:", error);
-            });
-          }
 
           const novelicon = document.createElement("span");
           novelicon.className = "glyphicon glyphicon-star-empty";
@@ -394,29 +364,6 @@
           cnurl.className = "url";
           cnurl.href = cn.url;
           cnurl.textContent = '前往閱讀';
-
-          function bookMark(data) {
-            const api = "http://127.0.0.1:8000/novels/mark/";
-            fetch(api, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("There was a problem with the fetch operation:", error);
-            });
-          }
 
           const cnicon = document.createElement("span");
           cnicon.className = "glyphicon glyphicon-star-empty";
