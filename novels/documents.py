@@ -1,6 +1,6 @@
 from django_elasticsearch_dsl import Document
 from django_elasticsearch_dsl.registries import registry
-from .models import TestNovel, NovelsInfo
+# from .models import TestNovel, NovelsInfo
 from elasticsearch_dsl.connections import connections 
 
 connections.create_connection() 
