@@ -103,15 +103,18 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 db_user = os.getenv('DB_user')
 db_password = os.getenv('DB_password')
+db_name = os.getenv('DB_name')
+db_host = os.getenv('DB_host')
+db_port = os.getenv('DB_port')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'DEMO',
+        'NAME': db_name,
         'USER': db_user,
         'PASSWORD': db_password,
-        'HOST':'',
-        'PORT':'',
+        'HOST': db_host,
+        'PORT': db_port,
     }
 }
 

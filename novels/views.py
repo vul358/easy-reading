@@ -190,19 +190,23 @@ def mark(request):
         user = novel['user_id']
         check = Bookshelf.objects.filter(user_id=user, novel_id=novel_id).first()
         bookshelf_status = novel['bookshelf']
+        folder = novel['folder']
         if not check:
             bookshelf_object = Bookshelf()
             bookshelf_object.bookshelf = bookshelf_status
+            bookshelf_object.folder = folder
             bookshelf_object.novel_id = novel_id
             bookshelf_object.user_id = user
             bookshelf_object.save()
         else:
-            if check.bookshelf != bookshelf_status:
+            if check.bookshelf != bookshelf_status or check.folder != folder:
                 check.bookshelf = bookshelf_status
+                check.folder = folder
                 check.save()
-        return HttpResponse("status:success")
-    except json.JSONDecodeError as e: 
-        return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)
+        return JsonResponse({"status": "success"})
+    except json.JSONDecodeError as e:
+        return JsonResponse({"status": "failed", "msg": str(e)}, status=400)
+        # return HttpResponse(f"Error decoding JSON: {str(e)}", status=400)
 
 
 def bookshelfs(request):
@@ -210,40 +214,25 @@ def bookshelfs(request):
         bookshelf = request.GET['bookshelf']
         user = request.GET['user_id']  
         books = Bookshelf.objects.filter(user_id=user, bookshelf=bookshelf)
-        if bookshelf == "pending" or bookshelf == "blocked":
-            no_folder = []
-            for book in books:
-                novel_id = book.novel_id
-                novel = ChosenNovels.objects.filter(id=novel_id).first()
-                result = {
-                    "title": novel.title,
-                    "author": novel.author,
-                    "outline": novel.outline,
-                    "category": novel.category,
-                    "url": novel.url
-                }
-                no_folder.append(result)
-            results = JsonResponse(no_folder, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
-        else:
-            folders = defaultdict(list)
-            for book in books:
-                novel_id = book.novel_id
-                folder_name = book.folder
-                novel = ChosenNovels.objects.filter(id=novel_id).first()
-                folder = {
-                    "title": novel.title,
-                    "author": novel.author,
-                    "outline": novel.outline,
-                    "category": novel.category,
-                    "url": novel.url
-                }
-                folders[folder_name].append(folder)
-            results = JsonResponse(folders, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
-        return results
+        folders = defaultdict(list)
+        for book in books:
+            folder_name = book.folder or 'no_folder'
+            novel = ChosenNovels.objects.filter(id=book.novel_id).first()
+            result = {
+                "id": novel.id,
+                "title": novel.title,
+                "author": novel.author,
+                "outline": novel.outline,
+                "category": novel.category,
+                "url": novel.url
+            }
+            folders[folder_name].append(result)
+
+        return JsonResponse(folders, status=200, json_dumps_params={'ensure_ascii': False})
 
 
 def my_bookshelf(request, user_id):
-    return render(request, 'bookshelf.html', {'user_id': user_id})
+    return render(request, 'bookshelf_c.html', {'user_id': user_id})
 
 
 def test_api(request):

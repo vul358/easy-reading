@@ -9,38 +9,30 @@
     <title>我的書櫃{{user_id}}</title>
 </head>
 <body>
-
     <div class="main-container">
         <ul class="columns">
-
-        <li calss="column to-do-column">
-            <div class="column-header">
-                <h4>Folder</h4>
-            </div>
-            <ul class="task-list" id="outer">
-        
-      
-          <li class="column to-do-column">
-            <div class="column-header">
-              <h4>待閱讀區</h4>
-            </div>
-            <ul class="task-list" id="pending">
-            </ul>
-          </li>
-
-          <li class="column to-do-column">
-            <div class="column-header">
-              <h4>待閱讀區</h4>
-            </div>
-            <ul class="task-list" id="pending-2">
-                <li><p>Testing</p></li>
-            </ul>
-          </li>
-
-        </ul>  
-        </li>
-      
-          <li class="column doing-column">
+            <li calss="column to-do-column">
+                <div class="column-header"><h4>待閱讀區</h4></div>
+                <ul class="task-list" id="pending">
+                    <li class="column to-do-column">
+                        <div class="column-header">
+                            <h4>Folder-2</h4>
+                        </div>
+                        <ul class="task-list" id="pending-3">
+                            <li><p>Testing-2</p></li>
+                        </ul>
+                    </li>
+                    <li class="column to-do-column">
+                        <div class="column-header">
+                            <h4>Folder</h4>
+                        </div>
+                        <ul class="task-list" id="pending-2">
+                            <li><p>Testing</p></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="column doing-column">
             <div class="column-header">
               <h4>閱讀中</h4>
             </div>
@@ -55,9 +47,8 @@
                 <p>Prototype</p>
               </li> -->
             </ul>
-          </li>
-      
-          <li class="column done-column">
+            </li>
+            <li class="column done-column">
             <div class="column-header">
               <h4>已閱畢</h4>
             </div>
@@ -69,9 +60,8 @@
                 <p>Sketches</p>
               </li> -->
             </ul>
-          </li>
-      
-          <li class="column trash-column">
+            </li>
+            <li class="column trash-column">
             <div class="column-header">
               <h4>黑名單區</h4>
             </div>
@@ -86,12 +76,10 @@
             <div class="column-button">
               <button class="button delete-button" onclick="emptyTrash()">Delete</button>
             </div>
-          </li>
-      
+            </li>
         </ul>
-      </div>
-
-
+    </div>
+    
     <script>
         // 在頁面上顯示每本書的函數
         function displayBook(book, bookshelfElement) {
