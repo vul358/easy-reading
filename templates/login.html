@@ -18,7 +18,7 @@
             <input class="form-control mr-sm-2" type="password" 
                    name="password" placeholder="Password">
             <a class="btn btn-danger" href="{% provider_login_url 'google' method='oauth2' %}">Google登入</a>
-            <a class="btn btn-success" type="submit" href="http://127.0.0.1:8000/novels/">送出</a>
+            <a class="btn btn-success" type="submit" href="/novels/">送出</a>
             &nbsp
             {% csrf_token %}
         </form>

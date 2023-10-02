@@ -30,7 +30,12 @@ SECRET_KEY = secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','35.74.46.248']
+ALLOWED_HOSTS = [
+    'novel.likedream.life',
+    'likedream.life',
+    'localhost',
+    '35.74.46.248',
+]
 
 
 # Application definition
@@ -57,14 +62,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 # SOCIALACCOUNT_PROVIDERS = {
 #     'google': {
@@ -183,6 +188,7 @@ LOGOUT_REDIRECT_URL = '/novels/'
 
 # All Authentication
 SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 # # settings.py
 # CSRF_COOKIE_SECURE = False
