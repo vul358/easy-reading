@@ -130,7 +130,7 @@
     <script>
         let drake;
         function getContainers () {
-            return document.querySelectorAll('.shelf-container, .folder-container');
+            return document.querySelectorAll('.shelf-container:not(#done), .folder-container');
         };
         function displayBook (book, container) {
             const bookLi = document.createElement('li');
@@ -233,7 +233,8 @@
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
 
-            const containers = [].map.call(getContainers(), c => c)
+            const containers = [];
+            getContainers().forEach(container => { containers.push(container); });
             drake = dragula(containers, {
                 accepts: function (el, target, source, sibling) {
                     if (/folder/.test(el.className)) {
