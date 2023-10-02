@@ -128,6 +128,7 @@
         </ul>
     </div>
     <script>
+        const user_id = '{{user_id}}';
         let drake;
         let _bookshelfStatus = 0
         function getContainers () {
@@ -228,7 +229,7 @@
                 console.error("There was a problem with the fetch operation:", error);
             });
         }
-        function startDragula (user_id) {
+        function startDragula () {
             if (_bookshelfStatus < 4) {
                 setTimeout(startDragula, 500);
                 return;
@@ -272,12 +273,11 @@
             })
         } 
         function initialize () {
-            const user_id = '{{user_id}}';
             loadBooks("pending", user_id);
             loadBooks("blocked", user_id);
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
-            startDragula(user_id);
+            startDragula();
         }
         initialize();
     </script>
