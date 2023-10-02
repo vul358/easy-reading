@@ -129,6 +129,7 @@
     </div>
     <script>
         let drake;
+        let _bookshelfStatus = 0
         function getContainers () {
             return document.querySelectorAll('.shelf-container:not(#done), .folder-container');
         };
@@ -187,6 +188,7 @@
                         books.forEach(book => displayBook(book, folderElement));
                     }
                 });
+                _bookshelfStatus += 1;
             })
             .catch(error => {
                 console.error('獲取數據時出現錯誤:', error);
@@ -226,14 +228,14 @@
                 console.error("There was a problem with the fetch operation:", error);
             });
         }
-        function initialize () {
-            const user_id = '{{user_id}}';
-            loadBooks("pending", user_id);
-            loadBooks("blocked", user_id);
-            loadBooks("reading", user_id);
-            loadBooks("done", user_id);
-
-            drake = dragula([], {
+        function startDragula () {
+            if (_bookshelfStatus < 4) {
+                setTimeout(startDragula, 500);
+                return;
+            }
+            const containers = [];
+            getContainers().forEach(container => { containers.push(container); });
+            drake = dragula(containers, {
                 accepts: function (el, target, source, sibling) {
                     if (/folder/.test(el.className)) {
                         const belongs = el.className.match(/\w+-shelf/).pop()
@@ -268,7 +270,14 @@
                 };
                 markBook(data);
             })
-            getContainers().forEach(c => { drake.containers.push(c) });
+        } 
+        function initialize () {
+            const user_id = '{{user_id}}';
+            loadBooks("pending", user_id);
+            loadBooks("blocked", user_id);
+            loadBooks("reading", user_id);
+            loadBooks("done", user_id);
+            startDragula();
         }
         initialize();
     </script>
