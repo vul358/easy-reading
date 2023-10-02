@@ -228,7 +228,7 @@
                 console.error("There was a problem with the fetch operation:", error);
             });
         }
-        function startDragula () {
+        function startDragula (user_id) {
             if (_bookshelfStatus < 4) {
                 setTimeout(startDragula, 500);
                 return;
@@ -277,7 +277,7 @@
             loadBooks("blocked", user_id);
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
-            startDragula();
+            startDragula(user_id);
         }
         initialize();
     </script>
