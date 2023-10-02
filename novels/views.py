@@ -190,7 +190,7 @@ def mark(request):
         user = novel['user_id']
         check = Bookshelf.objects.filter(user_id=user, novel_id=novel_id).first()
         bookshelf_status = novel['bookshelf']
-        folder = novel['folder']
+        folder = novel.get('folder')
         if not check:
             bookshelf_object = Bookshelf()
             bookshelf_object.bookshelf = bookshelf_status
