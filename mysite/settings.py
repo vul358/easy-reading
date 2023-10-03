@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     'likedream.life',
     'localhost',
     '35.74.46.248',
+    # '127.0.0.1'
 ]
 
 # Application definition
@@ -183,10 +184,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/novels/'  # 登入後的首頁網址
-LOGOUT_REDIRECT_URL = '/novels/'
+LOGOUT_REDIRECT_URL = '/novels/home'
 
 # All Authentication
 SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table
+ACCOUNT_EMAIL_REQUIRED= True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 # # settings.py

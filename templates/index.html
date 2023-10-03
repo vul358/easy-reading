@@ -1,23 +1,181 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <html>
   <head>
-    <title>網路小說推薦器</title>
+    <title>Easy Reading</title>
+    <style>
+          .page-content {
+            margin: 20px; /* 添加外边距，控制网页四周的空白 */
+        }
+        /* 书籍容器 */
+.novel {
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+/* 书籍标题 */
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* 书籍作者 */
+.author {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* 书籍分类 */
+.category {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* 书籍标签 */
+.tags {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+/* 书籍摘要 */
+.outline {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+/* 阅读链接 */
+.url {
+  font-size: 1rem;
+  text-decoration: none;
+  color: #007bff;
+}
+
+/* 图标 */
+.bi {
+  font-size: 1.5rem;
+  margin-right: 5px;
+  cursor: pointer;
+  color: #f39c12;
+}
+
+/* 鼠标悬停时变色 */
+.bi:hover {
+  color: #e74c3c;
+}
+
+    </style>
   </head>
   <body>
-    <a href="/novels/logout/" class="btn btn-primary">登出</a>
-    <a href="{% url 'my_bookshelf' user_id=user_id %}" class="btn btn-primary">我的書櫃</a>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand">Easy Reading 輕鬆看文</a>
+        <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button> -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                推薦設定
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">閱讀時間</a></li>
+                <li><a class="dropdown-item" href="#">小說年份</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">今日新書</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'my_bookshelf' user_id=user_id %}">我的書櫃</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/novels/logout/">登出</a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div  class="page-content">
+  <p class="lead">
     {% if user_id %}
-    <p>Welcome，{{ username }}！ </p>
+    <h5>
+      <small class="text-body-secondary">嗨，{{ username }}！今天想看什麼文？</small>
+    </h5>
     {% endif %}
-    <h1>今天想看什麼書？為你推薦>></h1>
-    <label>輸入種子小說書名</label>
+  </p>
+  <div class="col-6">
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">喜歡的文</span>
+    <input type="text" id="title" class="form-control" placeholder="輸入種子小說書名" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon2">喜歡的作者</span>
+    <input type="text" id="author" class="form-control" placeholder="輸入種子小說作者" aria-label="輸入種子小說作者" aria-describedby="basic-addon1">
+  </div>
+</div>
+<div class="col-6">
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">選取作品類別</label>
+    <select class="form-select" id="category">
+      <option selected>言情</option>
+　　   <option>耽美</option>
+　　   <option>百合</option>
+      <option>武俠</option>
+      <option>玄幻</option>
+      <option>科幻</option>
+      <option>恐怖</option>
+      <option>推理</option>
+      <option>歷史</option>
+      <option>軍事</option>
+      <option>生活</option>
+      <option>學習</option>
+      <option>文學</option>
+      <option>其他</option>
+    </select>
+
+    <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
+    <input type="text" id="input0" list="tag" class="form-select">
+    <datalist id="tag">
+      <option selected>快穿</option>
+　　   <option>爽文</option>
+　　   <option>種田</option>
+      <option>輕鬆</option>
+      <option>強強</option>
+      <option>正劇</option>
+      <option>忠犬</option>
+      <option>甜文</option>
+      <option>星際</option>
+      <option>無限</option>
+      <option>直播</option>
+      <option>火葬場</option>
+      <option>破鏡重圓</option>
+      <option>天作之合
+      </option>
+    </datalist>
+    <button type="button" id="search_0" class="btn btn-secondary">找好文</button>
+  </div>
+</div>
+
+
+
+    <!-- <label>輸入種子小說書名</label>
     <input type="text" id="title">
     <label>輸入種子小說作者</label>
     <input type="text" id="author">
     <label>選取小說類別</label>
+    
     <select id="category">
         <option selected>言情</option>
 　　     <option>耽美</option>
@@ -32,7 +190,7 @@
         <option>生活</option>
         <option>學習</option>
         <option>文學</option>
-        <option>其他</option>
+        <option>其他</option> -->
         <!-- <option value="BG" selected>言情</option>
 　　     <option value="BL">耽美</option>
 　　     <option value="GL">百合</option>
@@ -47,7 +205,7 @@
         <option value="learn">學習</option>
         <option value="literature">文學</option>
         <option value="other">其他</option> -->
-      </select>
+      <!-- </select>
       <label>選取或輸入一個標籤</label>
       <input type="text" id="input0" list="tag">
       <datalist id="tag">
@@ -64,7 +222,7 @@
         <option>直播</option>
         <option>火葬場</option>
         <option>破鏡重圓</option>
-        <option>天作之合</option>
+        <option>天作之合</option> -->
            <!-- <option value="fast" selected>快穿</option>
  　　       <option value="happy">爽文</option>
  　　       <option value="country">種田</option>
@@ -79,23 +237,31 @@
            <option value="fire">火葬場</option>
            <option value="reunion">破鏡重圓</option>
            <option value="fit">天作之合</option> -->
-      </datalist>
-      <button type="submit" id="search_0">推薦好書</button>
+      <!-- </datalist> -->
 
+      <span class="badge bg-secondary"><h5>同作者的其他作品</h5></span>
       <div id="novels">
-        <h3>推薦同作者的其他作品</h3>
       </div>
     <br>
+    <span class="badge bg-secondary"><h5>同類別的推薦作品</h5></span>
+    <!-- <h3>同類別的推薦作品</h3> -->
       <div id="categories">
-        <h3>同類別的推薦作品</h3>
       </div>
     <br>
     <br>
     <br>
     <br>
-    <label>給我一點小驚喜 [隨意輸入感興趣的關鍵字] </label>
-      <input type="text" id="term">
-      <button type="submit" id="search">推薦好書</button>
+    <div class="col-6">
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
+      <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
+      <!-- <button type="submit" id="search">推薦好書</button> -->
+      <button type="button" id="search" class="btn btn-secondary" >登登登</button>
+    </div>
+    <!-- <label>給我一點小驚喜 [隨意輸入感興趣的關鍵字] </label>
+      <input type="text" id="term"> -->
+      
+    </div>
     <div id="books"></div>
 
 
@@ -126,8 +292,8 @@
           }
 
 
-      function insertBooks(data) {
-        const booksContainer = document.getElementById("books");
+      function insertBooks(data, divID) {
+        const booksContainer = document.getElementById(divID);
         booksContainer.innerHTML = ""; // Clear previous books
       
         for (let i = 0; i < data.length; i++) {
@@ -135,6 +301,14 @@
           const bookDiv = document.createElement("div");
           bookDiv.className = "novel";
           bookDiv.setAttribute("novel_num", i); 
+
+          const msg = document.createElement("div");
+          if (item.message) {
+            msg.className="alert alert-info col-8";
+            msg.setAttribute("role", "alert");
+            msg.textContent = item.message;
+            booksContainer.appendChild(msg);
+          } else {
 
           const bookName = document.createElement("div");
           bookName.className = "title";
@@ -165,10 +339,11 @@
 
 
           const icon = document.createElement("span");
-          icon.className = "glyphicon glyphicon-star-empty";
+          icon.className = "bi bi-star";
           icon.addEventListener("click", function(){
-            icon.className = "glyphicon glyphicon-star";
-            iconRemove.className = "glyphicon glyphicon-remove-circle";
+            icon.className = "bi bi-star-fill";
+            iconRemove.className = "bi bi-x-circle";
+
 
             const data = {
                 "user_id": user,
@@ -177,16 +352,16 @@
                 "author": item.author,
                 "outline": item.outline,
                 "url": item.url,
-                "category": item.category
+                "category": item.category,
             };
             bookMark(data);          
           });
 
           const iconRemove = document.createElement("span");
-          iconRemove.className = "glyphicon glyphicon-remove-circle";
+          iconRemove.className = "bi bi-x-circle";
           iconRemove.addEventListener("click", function(){
-            iconRemove.className = "glyphicon glyphicon-remove-sign";
-            icon.className = "glyphicon glyphicon-star-empty"
+            iconRemove.className = "bi bi-x-circle-fill";
+            icon.className = "bi bi-star"
 
             const data = {
                 "user_id": user,
@@ -211,12 +386,12 @@
         
         booksContainer.appendChild(bookDiv);
       }
-    }
+    }}
 
     function fetchProducts(term) {
       fetch("/novels/search_novel/?term=" + encodeURIComponent(term))
         .then(resp => resp.json())
-        .then(data => insertBooks(data))
+        .then(data => insertBooks(data, "books"))
         .catch(error => console.error("Error fetching products:", error));
     }
 
@@ -227,97 +402,10 @@
     })
 
 
-    function insertNovels(data) {
-        const novelsContainer = document.getElementById("novels");
-        novelsContainer.innerHTML = ""; // Clear previous books
-      
-        for (let i = 0; i < data.length; i++) {
-          const novel = data[i];
-          const novelDiv = document.createElement("div");
-          novelDiv.className = "novel_0";
-          novelDiv.setAttribute("novel_0_num", i); 
-
-        //   const authorDiv = document.createElement("h3");
-        //   authorDiv.textContent = "推薦同作者的其他作品"
-
-          const novelName = document.createElement("div");
-          novelName.className = "title";
-          novelName.textContent = novel.title;
-
-          const novelauthor = document.createElement("div");
-          novelauthor.className = "author";
-          novelauthor.textContent = novel.author;
-
-          const noveltags = document.createElement("div");
-          noveltags.className = "tags";
-          if (novel.tags) {
-            noveltags.textContent = novel.tags
-          }
-          
-          const noveloutline = document.createElement("div");
-          noveloutline.className = "outline";
-          noveloutline.textContent = novel.outline;
-
-          const novelurl = document.createElement("a");
-          novelurl.className = "url";
-          if (novel.url) {
-            novelurl.href = novel.url;
-            novelurl.textContent = '前往閱讀';
-        } 
-
-          const novelicon = document.createElement("span");
-          novelicon.className = "glyphicon glyphicon-star-empty";
-          novelicon.addEventListener("click", function(){
-            novelicon.className = "glyphicon glyphicon-star";
-            noveliconRemove.className = "glyphicon glyphicon-remove-circle";
-
-            const data = {
-                "user_id": user,
-                "bookshelf": "pending",
-                "title": novel.title,
-                "author": novel.author,
-                "outline": novel.outline,
-                "url": novel.url,
-                "category": novel.category
-            };
-            bookMark(data);          
-          });
-
-          const noveliconRemove = document.createElement("span");
-          noveliconRemove.className = "glyphicon glyphicon-remove-circle";
-          noveliconRemove.addEventListener("click", function(){
-            noveliconRemove.className = "glyphicon glyphicon-remove-sign";
-            novelicon.className = "glyphicon glyphicon-star-empty"
-            const data = {
-                "user_id": user,
-                "bookshelf": "blocked",
-                "title": novel.title,
-                "author": novel.author,
-                "outline": novel.outline,
-                "url": novel.url,
-                "category": novel.category
-            };
-            bookMark(data);  
-          });
-        
-        //   novelDiv.appendChild(authorDiv);
-          novelDiv.appendChild(novelName);
-          novelDiv.appendChild(novelauthor);
-          novelDiv.appendChild(noveltags);
-          novelDiv.appendChild(noveloutline);
-          novelDiv.appendChild(novelurl);
-          novelDiv.appendChild(novelicon);
-          novelDiv.appendChild(noveliconRemove);
-
-        
-        novelsContainer.appendChild(novelDiv);
-      }
-    }
-
     function fetchNovels(author, title) {
       fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title))
         .then(resp => resp.json())
-        .then(data => insertNovels(data))
+        .then(data => insertBooks(data, "novels"))
         .catch(error => console.error("Error fetching products:", error));
     }
 
@@ -329,94 +417,10 @@
     })
 
 
-    function insertCategory(data) {
-        const categoriesContainer = document.getElementById("categories");
-        categoriesContainer.innerHTML = ""; // Clear previous books
-      
-        for (let i = 0; i < data.length; i++) {
-          const cn = data[i];
-          const categoryDiv = document.createElement("div");
-          categoryDiv.className = "novel_c";
-          categoryDiv.setAttribute("novel_c_num", i); 
-
-        //   const cnDiv = document.createElement("h3");
-        //   cnDiv.textContent = "同類別的推薦作品"
-
-          const cnName = document.createElement("div");
-          cnName.className = "title";
-          cnName.textContent = cn.title;
-
-          const cnauthor = document.createElement("div");
-          cnauthor.className = "author";
-          cnauthor.textContent = cn.author;
-
-          const cntags = document.createElement("div");
-          cntags.className = "tags";
-          if (category.tags) {
-            cntags.textContent = cn.tags;
-          }
-
-          const cnoutline = document.createElement("div");
-          cnoutline.className = "outline";
-          cnoutline.textContent = cn.outline;
-
-          const cnurl = document.createElement("a");
-          cnurl.className = "url";
-          cnurl.href = cn.url;
-          cnurl.textContent = '前往閱讀';
-
-          const cnicon = document.createElement("span");
-          cnicon.className = "glyphicon glyphicon-star-empty";
-          cnicon.addEventListener("click", function(){
-            cnicon.className = "glyphicon glyphicon-star";
-            cniconRemove.className = "glyphicon glyphicon-remove-circle";
-
-            const data = {
-                "user_id": user,
-                "bookshelf": "pending",
-                "title": cn.title,
-                "author": cn.author,
-                "outline": cn.outline,
-                "url": cn.url,
-                "category": cn.category
-            };
-            bookMark(data);          
-          });
-
-          const cniconRemove = document.createElement("span");
-          cniconRemove.className = "glyphicon glyphicon-remove-circle";
-          cniconRemove.addEventListener("click", function(){
-            cniconRemove.className = "glyphicon glyphicon-remove-sign";
-            cnicon.className = "glyphicon glyphicon-star-empty"
-            const data = {
-                "user_id": user,
-                "bookshelf": "blocked",
-                "title": cn.title,
-                "author": cn.author,
-                "outline": cn.outline,
-                "url": cn.url,
-                "category": cn.category
-            };
-            bookMark(data);  
-          });
-        
-        //   categoryDiv.appendChild(cnDiv);
-          categoryDiv.appendChild(cnName);
-          categoryDiv.appendChild(cnauthor);
-          categoryDiv.appendChild(cntags);
-          categoryDiv.appendChild(cnoutline);
-          categoryDiv.appendChild(cnurl);
-          categoryDiv.appendChild(cnicon);
-          categoryDiv.appendChild(cniconRemove);
-        
-        categoriesContainer.appendChild(categoryDiv);
-      }
-    }
-
     function fetchCategories(category, tag, title) {
       fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title))
         .then(resp => resp.json())
-        .then(data => insertCategory(data))
+        .then(data => insertBooks(data, "categories"))
         .catch(error => console.error("Error fetching products:", error));
     }
 
@@ -427,24 +431,8 @@
         const title = document.getElementById("title").value;
         fetchCategories(category, tag, title)
     })
-
-//     const productsContainer = document.getElementById("products");
-//   productsContainer.addEventListener('click', (event) => {
-//     const clickedElement = event.target;
-//     if (clickedElement.classList.contains('product')) {
-//       const item_id = clickedElement.getAttribute('product-item-id');
-//       window.location = `/recommendation?item_id=${item_id}`;
-//     }
-//   });
-    // const productDivs = document.querySelectorAll('.product');
-    //     productDivs.forEach(div => {
-    //         div.addEventListener('click', () => {
-    //             const item_id = div.getAttribute('product-item-id');
-    //             console.log(item_id);
-    //             window.location.href = `/recommendation?item_id=${item_id}`;
-    //         }, true);
-    //     });
   
     </script>
+  </div>
   </body>
 </html>

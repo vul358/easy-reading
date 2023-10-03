@@ -117,8 +117,8 @@ def search_author(request):
             results.append(result)
         if len(results) == 0:
                 not_found = [{ 
-                    "title": f"抱歉書庫中尚未有{author}的其他作品",
-                    "author": "小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試" }]
+                    "message": f"抱歉書庫中尚未有{author}其他作品。小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試"
+                   }]
                 results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
                 return results
         else:
