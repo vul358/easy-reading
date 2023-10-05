@@ -51,5 +51,4 @@ class NovelsDocument(Document):
             'website',
             'comment',
             'size',
-            'date',
         ]

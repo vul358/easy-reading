@@ -3,7 +3,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <html>
   <head>
@@ -74,6 +73,8 @@
   color: #e74c3c;
 }
 
+
+
     </style>
   </head>
   <body>
@@ -86,21 +87,22 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+              <div class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" id="test">
                 推薦設定
-              </a>
+              </div>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">閱讀時間</a></li>
+                <!-- <li><a class="dropdown-item" href="#">閱讀時間</a></li>
                 <li><a class="dropdown-item" href="#">小說年份</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">今日新書</a></li>
+                <li><a class="dropdown-item" href="#">今日新書</a></li> -->
               </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'my_bookshelf' user_id=user_id %}">我的書櫃</a>
+              {% load socialaccount %}
+              <a class="nav-link active" aria-current="page" href="{% provider_login_url 'google' method='oauth2' %}">我的書櫃</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'account_logout' %}">登出</a>
+              <a class="nav-link" href="{% provider_login_url 'google' method='oauth2' %}">登入/註冊</a>
             </li>
 
           </ul>
@@ -108,13 +110,12 @@
       </div>
     </nav>
     <div  class="page-content">
-  <p class="lead">
-    {% if user_id %}
+  <p class="lead" id="setence">
     <h5>
-      <small class="text-body-secondary">嗨，{{ username }}！今天想看什麼文？</small>
+      <small class="text-body-secondary">小說輕鬆看，登入享有專屬書櫃功能</small><i class="bi-bookmark-heart-fill"></i>
     </h5>
-    {% endif %}
   </p>
+  
   <div class="col-6">
   <div class="input-group mb-3">
     <span class="input-group-text" id="basic-addon1">喜歡的文</span>
@@ -167,84 +168,11 @@
     <button type="button" id="search_0" class="btn btn-secondary">找好文</button>
   </div>
 </div>
-
-
-
-    <!-- <label>輸入種子小說書名</label>
-    <input type="text" id="title">
-    <label>輸入種子小說作者</label>
-    <input type="text" id="author">
-    <label>選取小說類別</label>
-    
-    <select id="category">
-        <option selected>言情</option>
-　　     <option>耽美</option>
-　　     <option>百合</option>
-        <option>武俠</option>
-        <option>玄幻</option>
-        <option>科幻</option>
-        <option>恐怖</option>
-        <option>推理</option>
-        <option>歷史</option>
-        <option>軍事</option>
-        <option>生活</option>
-        <option>學習</option>
-        <option>文學</option>
-        <option>其他</option> -->
-        <!-- <option value="BG" selected>言情</option>
-　　     <option value="BL">耽美</option>
-　　     <option value="GL">百合</option>
-        <option value="gongfu">武俠</option>
-        <option value="fate">玄幻</option>
-        <option value="SF">科幻</option>
-        <option value="horror">恐怖</option>
-        <option value="mystery">推理</option>
-        <option value="history">歷史</option>
-        <option value="military">軍事</option>
-        <option value="life">生活</option>
-        <option value="learn">學習</option>
-        <option value="literature">文學</option>
-        <option value="other">其他</option> -->
-      <!-- </select>
-      <label>選取或輸入一個標籤</label>
-      <input type="text" id="input0" list="tag">
-      <datalist id="tag">
-        <option selected>快穿</option>
-　　     <option>爽文</option>
-　　     <option>種田</option>
-        <option>輕鬆</option>
-        <option>強強</option>
-        <option>正劇</option>
-        <option>忠犬</option>
-        <option>甜文</option>
-        <option>星際</option>
-        <option>無限</option>
-        <option>直播</option>
-        <option>火葬場</option>
-        <option>破鏡重圓</option>
-        <option>天作之合</option> -->
-           <!-- <option value="fast" selected>快穿</option>
- 　　       <option value="happy">爽文</option>
- 　　       <option value="country">種田</option>
-           <option value="easy">輕鬆</option>
-           <option value="strong">強強</option>
-           <option value="story">正劇</option>
-           <option value="dog">忠犬</option>
-           <option value="sweet">甜文</option>
-           <option value="universe">星際</option>
-           <option value="unlimit">無限</option>
-           <option value="live">直播</option>
-           <option value="fire">火葬場</option>
-           <option value="reunion">破鏡重圓</option>
-           <option value="fit">天作之合</option> -->
-      <!-- </datalist> -->
-
       <span class="badge bg-secondary"><h5>同作者的其他作品</h5></span>
       <div id="novels">
       </div>
     <br>
     <span class="badge bg-secondary"><h5>同類別的推薦作品</h5></span>
-    <!-- <h3>同類別的推薦作品</h3> -->
       <div id="categories">
       </div>
     <br>
@@ -255,43 +183,49 @@
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
       <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
-      <!-- <button type="submit" id="search">推薦好書</button> -->
       <button type="button" id="search" class="btn btn-secondary" >登登登</button>
     </div>
-    <!-- <label>給我一點小驚喜 [隨意輸入感興趣的關鍵字] </label>
-      <input type="text" id="term"> -->
-      
     </div>
     <div id="books"></div>
 
 
     <script>
-      var user = '{{ user_id }}';
-
-      function bookMark(data) {
-            const api = "/novels/mark/";
-            fetch(api, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("There was a problem with the fetch operation:", error);
-            });
-          }
-
-
+      // var user = '{{ user_id }}';
+      function alertLogin(clickID, appendID) {
+      const test = document.getElementById(clickID);
+      let svgContainer = null;
+          test.addEventListener("click", function(){
+            if (svgContainer) {
+              svgContainer.remove();
+              svgContainer = null;
+            } else {
+            svgContainer = document.createElement("div");
+            svgContainer.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                  <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                  </symbol>
+                  <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </symbol>
+                  <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </symbol>
+                </svg>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+  <div>
+    註冊或登入後使用進階功能！
+  </div>
+</div>
+            `
+            svgContainer.className = "col-3 ms-auto";
+            const setence = document.getElementById(appendID);
+            setence.appendChild(svgContainer);}
+          })};
+          
+      alertLogin("test", "setence");
+      alertLogin("search","books");
       function insertBooks(data, divID) {
         const booksContainer = document.getElementById(divID);
         booksContainer.innerHTML = ""; // Clear previous books
@@ -337,42 +271,72 @@
           url.href = item.url;
           url.textContent = '前往閱讀';
 
+          let svgContainer = null;
 
           const icon = document.createElement("span");
           icon.className = "bi bi-star";
           icon.addEventListener("click", function(){
             icon.className = "bi bi-star-fill";
             iconRemove.className = "bi bi-x-circle";
-
-
-            const data = {
-                "user_id": user,
-                "bookshelf": "pending",
-                "title": item.title,
-                "author": item.author,
-                "outline": item.outline,
-                "url": item.url,
-                "category": item.category,
-            };
-            bookMark(data);          
+            if (svgContainer) {
+              svgContainer.remove();
+              svgContainer = null;
+            } else {
+            svgContainer = document.createElement("div");
+            svgContainer.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                  <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                  </symbol>
+                  <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </symbol>
+                  <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </symbol>
+                </svg>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+  <div>
+    註冊或登入後使用進階功能！
+  </div>
+</div>
+            `
+            svgContainer.className = "col-6 ms-auto";
+            bookDiv.appendChild(svgContainer);}
           });
 
           const iconRemove = document.createElement("span");
           iconRemove.className = "bi bi-x-circle";
           iconRemove.addEventListener("click", function(){
             iconRemove.className = "bi bi-x-circle-fill";
-            icon.className = "bi bi-star"
-
-            const data = {
-                "user_id": user,
-                "bookshelf": "blocked",
-                "title": item.title,
-                "author": item.author,
-                "outline": item.outline,
-                "url": item.url,
-                "category": item.category
-            };
-            bookMark(data);  
+            icon.className = "bi bi-star";
+            if (svgContainer) {
+              svgContainer.remove();
+              svgContainer = null;
+            } else {
+            svgContainer = document.createElement("div");
+            svgContainer.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                  <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                  </symbol>
+                  <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </symbol>
+                  <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </symbol>
+                </svg>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+  <div>
+    註冊或登入後使用進階功能！
+  </div>
+</div>
+            `
+            svgContainer.className = "col-6 ms-auto";
+            bookDiv.appendChild(svgContainer);}
           });
 
           bookDiv.appendChild(bookName);
@@ -388,6 +352,7 @@
       }
     }}
 
+
     function fetchProducts(term) {
       fetch("/novels/search_novel/?term=" + encodeURIComponent(term))
         .then(resp => resp.json())
@@ -395,11 +360,11 @@
         .catch(error => console.error("Error fetching products:", error));
     }
 
-    const search_novel = document.getElementById("search");
-    search_novel.addEventListener("click", () => {
-        const term = document.getElementById("term").value;
-        fetchProducts(term)
-    })
+    // const search_novel = document.getElementById("search");
+    // search_novel.addEventListener("click", () => {
+    //     const term = document.getElementById("term").value;
+    //     fetchProducts(term)
+    // })
 
 
     function fetchNovels(author, title) {

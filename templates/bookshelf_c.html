@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.3/dragula.min.js'></script>
+    <style>
+        .sheives {
+            margin-top: 20px;
+        }
+        .shelf-container {
+            min-width: 100px;
+            min-height: 50px;
+            margin: 20px auto;
+        }
+        .folder-container {
+            min-width: 100px;
+            min-height: 30px;
+            padding-left: 0px;
+        }
+        .book {
+            /* border: #d6d6d6 0.2rem solid; */
+            display: block;
+            border-radius: 0.2rem;
+        }
+        .gu-mirror {
+            border: #d6d6d6 0.2rem solid;
+            position: fixed !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
+            opacity: 0.8;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+            filter: alpha(opacity=80);
+        }
+        .gu-hide {
+            display: none !important;
+        }
+        .gu-unselectable {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        .gu-transit {
+            opacity: 0.2;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+            filter: alpha(opacity=20);
+        }
+        .task {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            vertical-align: middle;
+            list-style-type: none;
+            background: #fff;
+            -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+            margin: 0.4rem;
+            height: 4rem;
+            border: #000013 0.15rem solid;
+            border-radius: 0.2rem;
+            cursor: move;
+            text-align: center;
+            vertical-align: middle;
+        }
+        #taskText {
+            background: #fff;
+            border: #000013 0.15rem solid;
+            border-radius: 0.2rem;
+            text-align: center;
+            font-family: "Roboto Slab", serif;
+            height: 4rem;
+            width: 7rem;
+            margin: auto 0.8rem auto 0.1rem;
+        }
+        .task p {
+            margin: auto;
+        }
+        .reading-shelf {
+            background: #f1f1f1;
+        }
+        .done-shelf {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <title>我的書櫃{{user_id}}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand">Easy Reading 輕鬆看文</a>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                  推薦設定
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">閱讀時間</a></li>
+                  <li><a class="dropdown-item" href="#">小說年份</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">今日新書</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/novels/">回到首頁</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_logout' %}">登出</a>
+              </li>
+  
+            </ul>
+          </div>
+        </div>
+      </nav>
+    <div class="main-container container text-center">
+        <ul class="sheives row">
+            <li id="pending-shelf" class="shelf col list-group-item">
+                <div class="shelf-header list-group-item list-group-item-primary"><h4>待閱讀</h4></div>
+                <ul id="pending" class="shelf-container list-group col"></ul>
+            </li>
+            <li id="reading-shelf" class="shelf col list-group-item">
+                <div class="shelf-header list-group-item list-group-item-warning"><h4>閱讀中</h4></div>
+                <ul id="reading" class="shelf-container list-group col"></ul>
+                <div class="shelf-button input-group mb-6">
+                    <input type="text" id="reading-shelf-append-folder" class="form-control" placeholder="New Folder Name" />
+                    <button class="button btn btn-outline-secondary" type="button" onClick="addFolder('reading-shelf-append-folder')">Add</button>
+                </div>
+            </li>
+            <li id="done-shelf" class="shelf col list-group-item">
+                <div class="shelf-header list-group-item list-group-item-success"><h4>已閱畢</h4></div>
+                <ul id="done" class="shelf-container list-group col">
+                    <li class="folder done-shelf list-group-item">
+                        <div class="folder-header col"><h5>好看</h5></div>
+                        <ul id="folder-good" class="folder-container" data-name="good"></ul>
+                    </li>
+                    <li class="folder done-shelf list-group-item">
+                        <div class="folder-header col"><h5>普通</h5></div>
+                        <ul id="folder-normal" class="folder-container" data-name="normal"></ul>
+                    </li>
+                    <li class="folder done-shelf list-group-item">
+                        <div class="folder-header col"><h5>難看</h5></div>
+                        <ul id="folder-bad" class="folder-container" data-name="bad"></ul>
+                    </li>
+                </ul>
+            </li>
+            <li id="blocked-shelf" class="shelf col list-group-item">
+                <div class="shelf-header list-group-item list-group-item-danger"><h4>黑名單</h4></div>
+                <ul id="blocked" class="shelf-container list-group col"></ul>
+            </li>
+        </ul>
+    </div>
+    <script>
+        const user_id = '{{user_id}}';
+        let drake;
+        let _bookshelfStatus = 0
+        function getContainers () {
+            return document.querySelectorAll('.shelf-container:not(#done), .folder-container');
+        };
+        function displayBook (book, container) {
+            const bookLi = document.createElement('li');
+            bookLi.className = 'book'
+            bookLi.setAttribute("data-title", book.title);
+            bookLi.setAttribute("data-author", book.author);
+            bookLi.setAttribute("data-outline", book.outline);
+            bookLi.setAttribute("data-url", book.url);
+            bookLi.setAttribute("data-category", book.category);
+            bookLi.innerHTML = `
+            <div class="accordion" id="book_${book.id}">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#book_${book.id}_body" aria-expanded="false" aria-controls="book_${book.id}_body">
+                        <strong style="margin-right: 15px">${book.title}</strong>
+                        <small># ${book.author}</small>
+                        </button>
+                    </h2>
+                    <div id="book_${book.id}_body" class="accordion-collapse collapse" data-bs-parent="#book_${book.id}">
+                        <div class="accordion-body">
+                        <strong><a href="${book.url}">[前往閱讀]</a></strong>
+                        <br />
+                        ${book.outline}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            container.appendChild(bookLi);
+        };
+        function createFolder (bookshelfElement, folderName) {
+            const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, '')}`
+            let folder = document.getElementById(folderId);
+            if (!folder) {
+                bookshelfElement.innerHTML += `
+                <li class="folder ${bookshelfElement.id}-shelf list-group-item">
+                    <div class="folder-header col"><h5>${folderName}</h5></div>
+                    <ul id="${folderId}" class="folder-container" data-name="${folderName}"></ul>
+                </li>`;
+                folder = document.getElementById(folderId);
+            }
+            return folder;
+        }
+        function loadBooks (bookshelf, userId) {
+            const bookshelfElement = document.getElementById(bookshelf);
+            const api = `/novels/bookshelfs/?bookshelf=${encodeURIComponent(bookshelf)}&user_id=${encodeURIComponent(userId)}`;
+            fetch(api)
+            .then(response => response.json())
+            .then(data => {
+                Object.entries(data).map(([folder, books]) => {
+                    if (folder === 'no_folder') {
+                        books.forEach(book => displayBook(book, bookshelfElement));
+                    } else {
+                        // if (folder === 'folder-good' || folder === 'folder-bad' || folder === 'folder_noraml') {
+                        //     const folderExist = getElementById(folder);
+                        //     books.forEach(book => displayBook(book, folderExist));
+                        // } else {
+                        const folderElement = createFolder(bookshelfElement, folder);
+                        books.forEach(book => displayBook(book, folderElement));
+                    // }
+                }});
+                _bookshelfStatus += 1;
+            })
+            .catch(error => {
+                console.error('獲取數據時出現錯誤:', error);
+            });
+        }
+        function addFolder(inputId) {
+            const $input = document.getElementById(inputId)
+            const folderName = $input.value
+            if (folderName.length > 0) {
+                const shelfName = $input.id.split('-')[0]
+                const $shelf = document.getElementById(shelfName)
+                createFolder($shelf, folderName);
+                $input.value = ''
+                drake.containers.splice()
+                getContainers().forEach(c => { drake.containers.push(c) })
+            }
+        }
+        function markBook (data) {
+            const api = "/novels/mark/";
+            fetch(api, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+        }
+        function startDragula () {
+            if (_bookshelfStatus < 4) {
+                setTimeout(startDragula, 500);
+                return;
+            }
+            const containers = [];
+            getContainers().forEach(container => { containers.push(container); });
+            drake = dragula(containers, {
+                accepts: function (el, target, source, sibling) {
+                    if (/folder/.test(el.className)) {
+                        const belongs = el.className.match(/\w+-shelf/).pop()
+                        return belongs.startsWith(target.id) && !/folder/.test(target.className) ? true : false
+                    } else { return true }
+                },
+                removeOnSpill: false,
+            }).on('drop', (el, target, source) => {
+                // check if target container is a folder
+                let folderName;
+                if (target.className.match(/folder-container/)) {
+                    folderName = target.dataset.name
+                } else {
+                    folderName = null;
+                }
+                // check which bookshelf to move
+                let bookshelfId;
+                if (folderName) {
+                    bookshelfId = target.closest('.shelf-container').id;
+                } else {
+                    bookshelfId = target.id;
+                }
+                const data = {
+                    "user_id": user_id,
+                    "bookshelf": bookshelfId,
+                    "title": el.dataset.title,
+                    "author": el.dataset.author,
+                    "outline": el.dataset.outline,
+                    "url": el.dataset.url,
+                    "category": el.dataset.category,
+                    "folder": folderName,
+                };
+                markBook(data);
+            })
+        } 
+        function initialize () {
+            loadBooks("pending", user_id);
+            loadBooks("blocked", user_id);
+            loadBooks("reading", user_id);
+            loadBooks("done", user_id);
+            startDragula();
+        }
+        initialize();
+    </script>
+</body>
+</html>

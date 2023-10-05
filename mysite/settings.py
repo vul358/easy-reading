@@ -30,8 +30,13 @@ SECRET_KEY = secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'novel.likedream.life',
+    'likedream.life',
+    'localhost',
+    '35.74.46.248',
+    # '127.0.0.1'
+]
 
 # Application definition
 
@@ -57,14 +62,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 # SOCIALACCOUNT_PROVIDERS = {
 #     'google': {
@@ -103,15 +108,18 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 db_user = os.getenv('DB_user')
 db_password = os.getenv('DB_password')
+db_name = os.getenv('DB_name')
+db_host = os.getenv('DB_host')
+db_port = os.getenv('DB_port')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'DEMO',
+        'NAME': db_name,
         'USER': db_user,
         'PASSWORD': db_password,
-        'HOST':'',
-        'PORT':'',
+        'HOST': db_host,
+        'PORT': db_port,
     }
 }
 
@@ -168,6 +176,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -175,6 +184,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/novels/'  # 登入後的首頁網址
+LOGOUT_REDIRECT_URL = '/novels/home'
 
 # All Authentication
 SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table
+ACCOUNT_EMAIL_REQUIRED= True
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+# # settings.py
+# CSRF_COOKIE_SECURE = False
