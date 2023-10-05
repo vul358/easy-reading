@@ -389,7 +389,7 @@
     }}
 
     function fetchProducts(term) {
-      fetch("/novels/search_novel/?term=" + encodeURIComponent(term))
+      fetch("/novels/search_novel/?term=" + encodeURIComponent(term) + "&user_id=" + user)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "books"))
         .catch(error => console.error("Error fetching products:", error));
@@ -403,7 +403,7 @@
 
 
     function fetchNovels(author, title) {
-      fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title))
+      fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title)+ "&user_id=" + user)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "novels"))
         .catch(error => console.error("Error fetching products:", error));
@@ -418,7 +418,7 @@
 
 
     function fetchCategories(category, tag, title) {
-      fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title))
+      fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title) + "&user_id=" + user)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "categories"))
         .catch(error => console.error("Error fetching products:", error));

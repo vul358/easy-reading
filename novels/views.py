@@ -60,10 +60,24 @@ def logout(request):
     return redirect('/novels/home') #重新導向到登入畫面
 
 
+def test(user_id):
+    user_books = Bookshelf.objects.filter(user_id=user_id)
+    exclude_titles = []
+    for book in user_books:
+        novel = book.novel_id
+        chosen_novel = ChosenNovels.objects.get(id=novel) 
+        chosen_title = chosen_novel.title 
+        exclude_titles.append(chosen_title)
+    return exclude_titles
+
+
 def search_novel(request):
     if request.method == 'GET':
         term = request.GET['term']
-        s = NovelsDocument.search().query("match", outline = term)
+        user = request.GET['user_id']
+        exclude_titles = test(user)
+        title_query = [Q('match', title=title) for title in exclude_titles]
+        s = NovelsDocument.search().query('bool', must=[Q('match', outline = term)], must_not = title_query)
         results =[]
         for hit in s[:3]:
             if hit.tags == "":
@@ -92,9 +106,12 @@ def search_author(request):
     if request.method == 'GET':
         author = request.GET['author']
         title = request.GET['title']
+        user = request.GET['user_id']
+        exclude_titles = test(user)
+        exclude_titles.append(title)
         author_query = Q('match', author = author)
-        title_query = Q('match', title= title )
-        s = NovelsDocument.search().query('bool',  must=[author_query], must_not=[title_query])
+        title_query = [Q('match', title=title) for title in exclude_titles]
+        s = NovelsDocument.search().query('bool',  must=[author_query], must_not=title_query)
         results = []
         for hit in s:
             if hit.tags == "":
@@ -131,12 +148,12 @@ def search_category(request):
         category = request.GET['category']
         tag = request.GET['tag']
         title = request.GET['title']
-        # s = NovelsDocument.search().query("bool", must=[
-        #     {"match":{"category":category}},
-        #     {"match":{"tags":tag}}
-        #     ])
-        if title:
-            bool_query = Q('bool', must=[Q('match', category=category)], must_not=[Q('match', title=title)])
+        user = request.GET['user_id']
+        exclude_titles = test(user)
+        if len(exclude_titles) > 0:
+            if title:
+                exclude_titles.append(title)
+            bool_query = Q('bool', must=[Q('match', category=category)], must_not=[Q('match', title=title) for title in exclude_titles])
         else:
             bool_query = Q('bool', must=[Q('match', category=category)])
         if tag:
