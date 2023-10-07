@@ -89,9 +89,31 @@
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
                 推薦設定
               </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">閱讀時間</a></li>
-                <li><a class="dropdown-item" href="#">小說年份</a></li>
+              <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                <li>
+                  <label  class="dropdown-item">作品年份</label>
+                  <select class="dropdown-item" id="year">
+                  <option value="">全部</option>"
+                  <option>2016</option>
+            　　   <option>2017</option>
+            　　   <option>2018</option>
+                  <option>2019</option>
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2022</option>
+                  <option>2023</option>
+                </select>
+                </li>
+                <li><label  class="dropdown-item">預估閱讀時間</label>
+                  <select class="form-select" id="size">
+                    <option selected value="">全部</option>
+                    <option value="2h">2小時內</option>
+                    <option value="5h">2~5小時</option>
+                    <option value="10h">5~10小時</option>
+                    <option value="20h">10~20小時</option>
+                    <option value="max">20小時以上</option>
+                  </select>
+                </li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="#">今日新書</a></li>
               </ul>
@@ -118,7 +140,7 @@
   <div class="col-6">
   <div class="input-group mb-3">
     <span class="input-group-text" id="basic-addon1">喜歡的文</span>
-    <input type="text" id="title" class="form-control" placeholder="輸入種子小說書名" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
+    <input type="text" id="title" class="form-control" placeholder="輸入種子小說書名（選填）" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
   </div>
   <div class="input-group mb-3">
     <span class="input-group-text" id="basic-addon2">喜歡的作者</span>
@@ -144,9 +166,8 @@
       <option>文學</option>
       <option>其他</option>
     </select>
-
     <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
-    <input type="text" id="input0" list="tag" class="form-select">
+    <input type="text" id="input0" list="tag" class="form-select" >
     <datalist id="tag">
       <option selected>快穿</option>
 　　   <option>爽文</option>
@@ -168,9 +189,35 @@
   </div>
 </div>
 
+<!-- <div class="col-6">
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">進階設定（選用）</label>
+    <select class="form-select" id="year" placeholder="作品年份">
+      <option selected value="">--作品年份--</option>
+      <option>2016</option>
+　　   <option>2017</option>
+　　   <option>2018</option>
+      <option>2019</option>
+      <option>2020</option>
+      <option>2021</option>
+      <option>2022</option>
+      <option>2023</option>
+    </select>
+    <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
+    <select class="form-select" id="size">
+      <option selected value="">--預估閱讀時長--</option>
+      <option value="2h">2小時內</option>
+      <option value="5h">2~5小時</option>
+      <option value="10h">5~10小時</option>
+      <option value="20h">10~20小時</option>
+      <option value="max">20小時以上</option>
+    </select>
+    <button type="button" id="search_0" class="btn btn-secondary col-1" >找好文</button>
+  </div>
+</div> 
 
 
-    <!-- <label>輸入種子小說書名</label>
+    <label>輸入種子小說書名</label>
     <input type="text" id="title">
     <label>輸入種子小說作者</label>
     <input type="text" id="author">
@@ -244,7 +291,6 @@
       </div>
     <br>
     <span class="badge bg-secondary"><h5>同類別的推薦作品</h5></span>
-    <!-- <h3>同類別的推薦作品</h3> -->
       <div id="categories">
       </div>
     <br>
@@ -255,12 +301,8 @@
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
       <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
-      <!-- <button type="submit" id="search">推薦好書</button> -->
       <button type="button" id="search" class="btn btn-secondary" >登登登</button>
     </div>
-    <!-- <label>給我一點小驚喜 [隨意輸入感興趣的關鍵字] </label>
-      <input type="text" id="term"> -->
-      
     </div>
     <div id="books"></div>
 
@@ -313,6 +355,10 @@
           const bookName = document.createElement("div");
           bookName.className = "title";
           bookName.textContent = item.title;
+
+          const bookYear = document.createElement("div");
+          bookYear.className = "year";
+          bookYear.textContent = item.year;
 
           const author = document.createElement("div");
           author.className = "author";
@@ -370,12 +416,14 @@
                 "author": item.author,
                 "outline": item.outline,
                 "url": item.url,
-                "category": item.category
+                "category": item.category,
+                "year": item.year
             };
             bookMark(data);  
           });
 
           bookDiv.appendChild(bookName);
+          bookDiv.appendChild(bookYear);
           bookDiv.appendChild(author);
           bookDiv.appendChild(cat);
           bookDiv.appendChild(tags)
@@ -388,8 +436,8 @@
       }
     }}
 
-    function fetchProducts(term) {
-      fetch("/novels/search_novel/?term=" + encodeURIComponent(term) + "&user_id=" + user)
+    function fetchProducts(term, year, size) {
+      fetch("/novels/search_novel/?term=" + encodeURIComponent(term) + "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "books"))
         .catch(error => console.error("Error fetching products:", error));
@@ -398,12 +446,14 @@
     const search_novel = document.getElementById("search");
     search_novel.addEventListener("click", () => {
         const term = document.getElementById("term").value;
-        fetchProducts(term)
+        const year = document.getElementById("year").value;
+        const size = document.getElementById("size").value;
+        fetchProducts(term, year, size)
     })
 
 
-    function fetchNovels(author, title) {
-      fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title)+ "&user_id=" + user)
+    function fetchNovels(author, title, year, size) {
+      fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title)+ "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "novels"))
         .catch(error => console.error("Error fetching products:", error));
@@ -413,12 +463,14 @@
     search_book.addEventListener("click", () => {
         const author = document.getElementById("author").value;
         const title = document.getElementById("title").value;
-        fetchNovels(author, title)
+        const year = document.getElementById("year").value;
+        const size = document.getElementById("size").value;
+        fetchNovels(author, title, year, size)
     })
 
 
-    function fetchCategories(category, tag, title) {
-      fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title) + "&user_id=" + user)
+    function fetchCategories(category, tag, title, year, size) {
+      fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title) + "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
         .then(resp => resp.json())
         .then(data => insertBooks(data, "categories"))
         .catch(error => console.error("Error fetching products:", error));
@@ -429,8 +481,38 @@
         const category = document.getElementById("category").value;
         const tag = document.getElementById("input0").value;
         const title = document.getElementById("title").value;
-        fetchCategories(category, tag, title)
+        const year = document.getElementById("year").value;
+        const size = document.getElementById("size").value;
+        fetchCategories(category, tag, title, year, size)
     })
+
+    // const year_setting = document.getElementById("year");
+    // year_setting.addEventListener("click", () => {
+    //   const term = document.getElementById("term").value;
+    //   const author = document.getElementById("author").value;
+    //   const title = document.getElementById("title").value;
+    //   const year = document.getElementById("year").value;
+    //   const size = document.getElementById("size").value;
+    //   const category = document.getElementById("category").value;
+    //   const tag = document.getElementById("input0").value;
+    //   fetchProducts(term, year, size);
+    //   fetchCategories(category, tag, title, year, size);
+    //   fetchNovels(author, title, year, size);
+    // })  
+
+    // const size_setting = document.getElementById("size");
+    // size_setting.addEventListener("click", () => {
+    //   const term = document.getElementById("term").value;
+    //   const author = document.getElementById("author").value;
+    //   const title = document.getElementById("title").value;
+    //   const year = document.getElementById("year").value;
+    //   const size = document.getElementById("size").value;
+    //   const category = document.getElementById("category").value;
+    //   const tag = document.getElementById("input0").value;
+    //   fetchProducts(term, year, size);
+    //   fetchCategories(category, tag, title, year, size);
+    //   fetchNovels(author, title, year, size);
+    // })
   
     </script>
   </div>

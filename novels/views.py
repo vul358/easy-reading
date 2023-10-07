@@ -60,7 +60,7 @@ def logout(request):
     return redirect('/novels/home') #重新導向到登入畫面
 
 
-def test(user_id):
+def exclude_novels(user_id):
     user_books = Bookshelf.objects.filter(user_id=user_id)
     exclude_titles = []
     for book in user_books:
@@ -71,13 +71,35 @@ def test(user_id):
     return exclude_titles
 
 
+def transfer_size(size):
+    if size == '2h':
+        range_query = Q('range', size={'lt': '240'})
+    elif size == '5h':
+        range_query = Q('range', size={'gte':'240', 'lt': '600'})
+    elif size == '10h':
+        range_query = Q('range', size={'gte':'600', 'lt': '1200'})
+    elif size == '20h':
+        range_query = Q('range', size={'gte':'1200', 'lt': '2400'})
+    elif size == 'max':
+        range_query = Q('range', size={'gte':'2400'})
+    else:
+        range_query = Q()
+    return range_query
+
+
 def search_novel(request):
     if request.method == 'GET':
         term = request.GET['term']
         user = request.GET['user_id']
-        exclude_titles = test(user)
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        exclude_titles = exclude_novels(user)
+        term_query = Q('match', outline = term)
+        year_query = Q() if not year else Q('match', year=year)
         title_query = [Q('match', title=title) for title in exclude_titles]
-        s = NovelsDocument.search().query('bool', must=[Q('match', outline = term)], must_not = title_query)
+        range_query = transfer_size(size)
+        s = NovelsDocument.search().query('bool', must=[term_query, year_query], must_not = title_query)
+        s = s.query(range_query)
         results =[]
         for hit in s[:3]:
             if hit.tags == "":
@@ -86,7 +108,9 @@ def search_novel(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                 }
             else:
                 result = {
@@ -95,7 +119,9 @@ def search_novel(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                 }
             results.append(result) 
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -107,11 +133,16 @@ def search_author(request):
         author = request.GET['author']
         title = request.GET['title']
         user = request.GET['user_id']
-        exclude_titles = test(user)
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        exclude_titles = exclude_novels(user)
         exclude_titles.append(title)
         author_query = Q('match', author = author)
         title_query = [Q('match', title=title) for title in exclude_titles]
-        s = NovelsDocument.search().query('bool',  must=[author_query], must_not=title_query)
+        year_query = Q() if not year else Q('match', year=year)
+        range_query = transfer_size(size)
+        s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
+        s = s.query(range_query)
         results = []
         for hit in s:
             if hit.tags == "":
@@ -120,7 +151,9 @@ def search_author(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                 }
             else:
                 result = {
@@ -129,7 +162,9 @@ def search_author(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                 }
             results.append(result)
         if len(results) == 0:
@@ -149,17 +184,22 @@ def search_category(request):
         tag = request.GET['tag']
         title = request.GET['title']
         user = request.GET['user_id']
-        exclude_titles = test(user)
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        exclude_titles = exclude_novels(user)
+        year_query = Q() if not year else Q('match', year=year)
+        range_query = transfer_size(size)
         if len(exclude_titles) > 0:
             if title:
                 exclude_titles.append(title)
-            bool_query = Q('bool', must=[Q('match', category=category)], must_not=[Q('match', title=title) for title in exclude_titles])
+            bool_query = Q('bool', must=[Q('match', category=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
         else:
-            bool_query = Q('bool', must=[Q('match', category=category)])
+            bool_query = Q('bool', must=[Q('match', category=category), year_query])
         if tag:
             bool_query.should.append(Q('match', tags=tag))
         s = NovelsDocument.search().query(bool_query)
         s = s.sort({"comment": {"order":"desc"}})
+        s = s.query(range_query)
         results =[]
         for hit in s[0:3]:
             if hit.tags == "":
@@ -168,7 +208,9 @@ def search_category(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                     }
             else:
                 result = {
@@ -177,7 +219,9 @@ def search_category(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size
                     }
             results.append(result)  
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})

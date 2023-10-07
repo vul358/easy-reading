@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
     'likedream.life',
     'localhost',
     '35.74.46.248',
-    '127.0.0.1'
+    # '127.0.0.1'
 ]
 
 # Application definition
@@ -69,7 +69,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 # SOCIALACCOUNT_PROVIDERS = {
 #     'google': {
