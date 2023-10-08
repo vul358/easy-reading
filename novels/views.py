@@ -60,10 +60,46 @@ def logout(request):
     return redirect('/novels/home') #重新導向到登入畫面
 
 
+def exclude_novels(user_id):
+    user_books = Bookshelf.objects.filter(user_id=user_id)
+    exclude_titles = []
+    for book in user_books:
+        novel = book.novel_id
+        chosen_novel = ChosenNovels.objects.get(id=novel) 
+        chosen_title = chosen_novel.title 
+        exclude_titles.append(chosen_title)
+    return exclude_titles
+
+
+def transfer_size(size):
+    if size == '2h':
+        range_query = Q('range', size={'lt': '240'})
+    elif size == '5h':
+        range_query = Q('range', size={'gte':'240', 'lt': '600'})
+    elif size == '10h':
+        range_query = Q('range', size={'gte':'600', 'lt': '1200'})
+    elif size == '20h':
+        range_query = Q('range', size={'gte':'1200', 'lt': '2400'})
+    elif size == 'max':
+        range_query = Q('range', size={'gte':'2400'})
+    else:
+        range_query = Q()
+    return range_query
+
+
 def search_novel(request):
     if request.method == 'GET':
         term = request.GET['term']
-        s = NovelsDocument.search().query("match", outline = term)
+        user = request.GET.get('user_id','')
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        exclude_titles = exclude_novels(user)
+        term_query = Q('match', outline = term)
+        year_query = Q() if not year else Q('match', year=year)
+        title_query = [Q('match', title=title) for title in exclude_titles]
+        range_query = transfer_size(size)
+        s = NovelsDocument.search().query('bool', must=[term_query, year_query], must_not = title_query)
+        s = s.query(range_query)
         results =[]
         for hit in s[:3]:
             if hit.tags == "":
@@ -72,7 +108,10 @@ def search_novel(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                 }
             else:
                 result = {
@@ -81,10 +120,17 @@ def search_novel(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                 }
             results.append(result) 
-        results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        if len(results) == 0:
+            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，目前只接受繁體中文關鍵字，建議檢視您的輸入字詞，年份與閱讀時間設定，移除部分限制再嘗試一次。"}]
+            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        else:
+            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
 
 
@@ -92,9 +138,20 @@ def search_author(request):
     if request.method == 'GET':
         author = request.GET['author']
         title = request.GET['title']
+        user = request.GET.get('user_id','')
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        if user:
+            exclude_titles = exclude_novels(user)
+            exclude_titles.append(title)
+            title_query = [Q('match', title=title) for title in exclude_titles]
+        else:
+            title_query = [Q('match', title=title)]
         author_query = Q('match', author = author)
-        title_query = Q('match', title= title )
-        s = NovelsDocument.search().query('bool',  must=[author_query], must_not=[title_query])
+        year_query = Q() if not year else Q('match', year=year)
+        range_query = transfer_size(size)
+        s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
+        s = s.query(range_query)
         results = []
         for hit in s:
             if hit.tags == "":
@@ -103,7 +160,10 @@ def search_author(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                 }
             else:
                 result = {
@@ -112,12 +172,15 @@ def search_author(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                 }
             results.append(result)
         if len(results) == 0:
                 not_found = [{ 
-                    "message": f"抱歉書庫中尚未有{author}其他作品。小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試"
+                    "message": f"抱歉書庫中尚未有{author}其他作品。小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試。" 
                    }]
                 results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
                 return results
@@ -131,17 +194,25 @@ def search_category(request):
         category = request.GET['category']
         tag = request.GET['tag']
         title = request.GET['title']
-        # s = NovelsDocument.search().query("bool", must=[
-        #     {"match":{"category":category}},
-        #     {"match":{"tags":tag}}
-        #     ])
-        if title:
-            bool_query = Q('bool', must=[Q('match', category=category)], must_not=[Q('match', title=title)])
+        user = request.GET.get('user_id','')
+        year = request.GET.get('year', '')
+        size = request.GET.get('size', '')
+        if user:
+            exclude_titles = exclude_novels(user)
         else:
-            bool_query = Q('bool', must=[Q('match', category=category)])
+            exclude_titles = []
+        year_query = Q() if not year else Q('match', year=year)
+        range_query = transfer_size(size)
+        if len(exclude_titles) > 0:
+            if title:
+                exclude_titles.append(title)
+            bool_query = Q('bool', must=[Q('match', category=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
+        else:
+            bool_query = Q('bool', must=[Q('match', category=category), year_query])
         if tag:
             bool_query.should.append(Q('match', tags=tag))
         s = NovelsDocument.search().query(bool_query)
+        s = s.query(range_query)
         s = s.sort({"comment": {"order":"desc"}})
         results =[]
         for hit in s[0:3]:
@@ -151,7 +222,10 @@ def search_category(request):
                     "author": hit.author,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                     }
             else:
                 result = {
@@ -160,11 +234,19 @@ def search_category(request):
                     "tags": hit.tags,
                     "outline": hit.outline,
                     "url": hit.url,
-                    "category": hit.category
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
                     }
-            results.append(result)  
-        results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
-        return results
+            results.append(result)
+        if len(results) == 0:
+            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，建議檢視您的年份與閱讀時間設定，移除部分限制再嘗試一次。"}]
+            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return results  
+        else:
+            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return results
 
 
 @csrf_exempt
@@ -227,7 +309,6 @@ def bookshelfs(request):
                 "url": novel.url
             }
             folders[folder_name].append(result)
-
         return JsonResponse(folders, status=200, json_dumps_params={'ensure_ascii': False})
 
 
@@ -235,17 +316,21 @@ def my_bookshelf(request, user_id):
     return render(request, 'bookshelf_c.html', {'user_id': user_id})
 
 
-def test_api(request):
-    new_obj = Test()
-    new_obj.question_num = 5
-    new_obj.save()
-    return JsonResponse(data={'msg': 'add object success.'}, status=200)
+def search_bookshelf(request):
+    if request.method == 'GET':
+        user = request.GET['user_id']
+        title = request.GET['title']
+        titles = exclude_novels(user)
+        if title in titles:
+            book_id = ChosenNovels.objects.filter(title=title).first().id
+            result = {"book_id": book_id}
+            result = JsonResponse(result, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return result
+        else:
+            not_found = {"message": "書櫃中沒有這本書喔！"}
+            result = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return result
 
 
-def clear_table(request):
-    #將table所有data撈出來
-    all_obj = Test.objects.all()
-    #砍掉
-    all_obj.delete()
-    #回傳200，這裡使用JsonResponse，data記得回傳格式為dict
-    return JsonResponse(data={'msg':'clear table success.'}, status=200)
+
+

@@ -190,6 +190,7 @@ LOGOUT_REDIRECT_URL = '/novels/home'
 SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table
 ACCOUNT_EMAIL_REQUIRED= True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # # settings.py
 # CSRF_COOKIE_SECURE = False
