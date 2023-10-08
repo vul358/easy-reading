@@ -27,11 +27,23 @@
   margin-bottom: 5px;
 }
 
+.year {
+  font-size: 1rem;
+  color: #666;
+  font-weight: normal;
+  margin-bottom: 10px;
+  float: right;
+}
+
 /* 书籍作者 */
 .author {
   font-size: 1rem;
   color: #666;
   margin-bottom: 10px;
+}
+.size {
+  font-size: 0.8rem;
+  float: right;
 }
 
 /* 书籍分类 */
@@ -167,7 +179,7 @@
       <option>其他</option>
     </select>
     <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
-    <input type="text" id="input0" list="tag" class="form-select" >
+    <input type="text" id="input0" list="tag" class="form-select" pattern="[\\u4e00-\\u9fa5]+" title="請輸入繁體中文">
     <datalist id="tag">
       <option selected>快穿</option>
 　　   <option>爽文</option>
@@ -189,103 +201,6 @@
   </div>
 </div>
 
-<!-- <div class="col-6">
-  <div class="input-group mb-3">
-    <label class="input-group-text" for="inputGroupSelect01">進階設定（選用）</label>
-    <select class="form-select" id="year" placeholder="作品年份">
-      <option selected value="">--作品年份--</option>
-      <option>2016</option>
-　　   <option>2017</option>
-　　   <option>2018</option>
-      <option>2019</option>
-      <option>2020</option>
-      <option>2021</option>
-      <option>2022</option>
-      <option>2023</option>
-    </select>
-    <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
-    <select class="form-select" id="size">
-      <option selected value="">--預估閱讀時長--</option>
-      <option value="2h">2小時內</option>
-      <option value="5h">2~5小時</option>
-      <option value="10h">5~10小時</option>
-      <option value="20h">10~20小時</option>
-      <option value="max">20小時以上</option>
-    </select>
-    <button type="button" id="search_0" class="btn btn-secondary col-1" >找好文</button>
-  </div>
-</div> 
-
-
-    <label>輸入種子小說書名</label>
-    <input type="text" id="title">
-    <label>輸入種子小說作者</label>
-    <input type="text" id="author">
-    <label>選取小說類別</label>
-    
-    <select id="category">
-        <option selected>言情</option>
-　　     <option>耽美</option>
-　　     <option>百合</option>
-        <option>武俠</option>
-        <option>玄幻</option>
-        <option>科幻</option>
-        <option>恐怖</option>
-        <option>推理</option>
-        <option>歷史</option>
-        <option>軍事</option>
-        <option>生活</option>
-        <option>學習</option>
-        <option>文學</option>
-        <option>其他</option> -->
-        <!-- <option value="BG" selected>言情</option>
-　　     <option value="BL">耽美</option>
-　　     <option value="GL">百合</option>
-        <option value="gongfu">武俠</option>
-        <option value="fate">玄幻</option>
-        <option value="SF">科幻</option>
-        <option value="horror">恐怖</option>
-        <option value="mystery">推理</option>
-        <option value="history">歷史</option>
-        <option value="military">軍事</option>
-        <option value="life">生活</option>
-        <option value="learn">學習</option>
-        <option value="literature">文學</option>
-        <option value="other">其他</option> -->
-      <!-- </select>
-      <label>選取或輸入一個標籤</label>
-      <input type="text" id="input0" list="tag">
-      <datalist id="tag">
-        <option selected>快穿</option>
-　　     <option>爽文</option>
-　　     <option>種田</option>
-        <option>輕鬆</option>
-        <option>強強</option>
-        <option>正劇</option>
-        <option>忠犬</option>
-        <option>甜文</option>
-        <option>星際</option>
-        <option>無限</option>
-        <option>直播</option>
-        <option>火葬場</option>
-        <option>破鏡重圓</option>
-        <option>天作之合</option> -->
-           <!-- <option value="fast" selected>快穿</option>
- 　　       <option value="happy">爽文</option>
- 　　       <option value="country">種田</option>
-           <option value="easy">輕鬆</option>
-           <option value="strong">強強</option>
-           <option value="story">正劇</option>
-           <option value="dog">忠犬</option>
-           <option value="sweet">甜文</option>
-           <option value="universe">星際</option>
-           <option value="unlimit">無限</option>
-           <option value="live">直播</option>
-           <option value="fire">火葬場</option>
-           <option value="reunion">破鏡重圓</option>
-           <option value="fit">天作之合</option> -->
-      <!-- </datalist> -->
-
       <span class="badge bg-secondary"><h5>同作者的其他作品</h5></span>
       <div id="novels">
       </div>
@@ -300,8 +215,12 @@
     <div class="col-6">
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
-      <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
+      <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1" pattern="[\\u4e00-\\u9fa5]+" title="請輸入繁體中文">
       <button type="button" id="search" class="btn btn-secondary" >登登登</button>
+      <div class="invalid-feedback" style="padding-left: 138px;">
+        請輸入繁體中文唷
+      </div>
+    </form>
     </div>
     </div>
     <div id="books"></div>
@@ -332,7 +251,11 @@
                 console.error("There was a problem with the fetch operation:", error);
             });
           }
-
+      
+      function readingTime(size) {
+        let readingHours = Math.floor(size / 100 * 50 / 60);
+        return `預估閱讀時間：約${readingHours}~${readingHours+1}小時`;
+      }
 
       function insertBooks(data, divID) {
         const booksContainer = document.getElementById(divID);
@@ -356,9 +279,13 @@
           bookName.className = "title";
           bookName.textContent = item.title;
 
-          const bookYear = document.createElement("div");
+          const bookYear = document.createElement("span");
           bookYear.className = "year";
-          bookYear.textContent = item.year;
+          bookYear.textContent = item.date;
+
+          const bookSize = document.createElement("span");
+          bookSize.className = "size";
+          bookSize.textContent = readingTime(item.size);
 
           const author = document.createElement("div");
           author.className = "author";
@@ -381,7 +308,8 @@
           const url = document.createElement("a");
           url.className = "url";
           url.href = item.url;
-          url.textContent = '前往閱讀';
+          url.target = "_blank";
+          url.textContent = "前往閱讀";
 
 
           const icon = document.createElement("span");
@@ -423,8 +351,9 @@
           });
 
           bookDiv.appendChild(bookName);
-          bookDiv.appendChild(bookYear);
+          bookName.appendChild(bookYear);
           bookDiv.appendChild(author);
+          author.appendChild(bookSize);
           bookDiv.appendChild(cat);
           bookDiv.appendChild(tags)
           bookDiv.appendChild(outline);
@@ -443,12 +372,27 @@
         .catch(error => console.error("Error fetching products:", error));
     }
 
+    // 檢查輸入是否是繁體中文
+    function checkChinese(inputElement) {
+      const chinesePattern = /^[\u4e00-\u9fa5]+$/;
+      const inputValue = inputElement.value;
+      if (chinesePattern.test(inputValue)) {
+        inputElement.className = inputElement.className.replace('is-invalid');
+        return true;
+      } else {
+        inputElement.className += " is-invalid";
+        return false;
+      }
+    }
+      
     const search_novel = document.getElementById("search");
     search_novel.addEventListener("click", () => {
-        const term = document.getElementById("term").value;
-        const year = document.getElementById("year").value;
-        const size = document.getElementById("size").value;
-        fetchProducts(term, year, size)
+        const term = document.getElementById("term");
+        if (checkChinese(term)) {
+          const year = document.getElementById("year").value;
+          const size = document.getElementById("size").value;
+          fetchProducts(term.value, year, size)
+        }
     })
 
 
@@ -485,34 +429,6 @@
         const size = document.getElementById("size").value;
         fetchCategories(category, tag, title, year, size)
     })
-
-    // const year_setting = document.getElementById("year");
-    // year_setting.addEventListener("click", () => {
-    //   const term = document.getElementById("term").value;
-    //   const author = document.getElementById("author").value;
-    //   const title = document.getElementById("title").value;
-    //   const year = document.getElementById("year").value;
-    //   const size = document.getElementById("size").value;
-    //   const category = document.getElementById("category").value;
-    //   const tag = document.getElementById("input0").value;
-    //   fetchProducts(term, year, size);
-    //   fetchCategories(category, tag, title, year, size);
-    //   fetchNovels(author, title, year, size);
-    // })  
-
-    // const size_setting = document.getElementById("size");
-    // size_setting.addEventListener("click", () => {
-    //   const term = document.getElementById("term").value;
-    //   const author = document.getElementById("author").value;
-    //   const title = document.getElementById("title").value;
-    //   const year = document.getElementById("year").value;
-    //   const size = document.getElementById("size").value;
-    //   const category = document.getElementById("category").value;
-    //   const tag = document.getElementById("input0").value;
-    //   fetchProducts(term, year, size);
-    //   fetchCategories(category, tag, title, year, size);
-    //   fetchNovels(author, title, year, size);
-    // })
   
     </script>
   </div>
