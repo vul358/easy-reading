@@ -286,6 +286,20 @@ def mark(request):
                 check.bookshelf = bookshelf_status
                 check.folder = folder
                 check.save()
+        if bookshelf_status == 'done':      
+            title_query = Q('match', title=title)
+            author_query = Q('match', author = author)
+            s = NovelsDocument.search().query('bool',  must=[author_query, title_query])
+            if folder =='good':
+                for hit in s:
+                    hit.comment += 10
+                    hit.save()
+            elif folder == 'normal':
+                for hit in s:
+                    hit.comment += 5
+                    hit.save()
+            else:
+                pass
         return JsonResponse({"status": "success"})
     except json.JSONDecodeError as e:
         return JsonResponse({"status": "failed", "msg": str(e)}, status=400)
