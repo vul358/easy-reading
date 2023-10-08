@@ -309,7 +309,6 @@ def bookshelfs(request):
                 "url": novel.url
             }
             folders[folder_name].append(result)
-
         return JsonResponse(folders, status=200, json_dumps_params={'ensure_ascii': False})
 
 
@@ -317,17 +316,21 @@ def my_bookshelf(request, user_id):
     return render(request, 'bookshelf_c.html', {'user_id': user_id})
 
 
-def test_api(request):
-    new_obj = Test()
-    new_obj.question_num = 5
-    new_obj.save()
-    return JsonResponse(data={'msg': 'add object success.'}, status=200)
+def search_bookshelf(request):
+    if request.method == 'GET':
+        user = request.GET['user_id']
+        title = request.GET['title']
+        titles = exclude_novels(user)
+        if title in titles:
+            book_id = ChosenNovels.objects.filter(title=title).first().id
+            result = {"book_id": book_id}
+            result = JsonResponse(result, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return result
+        else:
+            not_found = {"message": "書櫃中沒有這本書喔！"}
+            result = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return result
 
 
-def clear_table(request):
-    #將table所有data撈出來
-    all_obj = Test.objects.all()
-    #砍掉
-    all_obj.delete()
-    #回傳200，這裡使用JsonResponse，data記得回傳格式為dict
-    return JsonResponse(data={'msg':'clear table success.'}, status=200)
+
+

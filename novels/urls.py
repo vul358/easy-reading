@@ -5,8 +5,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path("", views.index, name="index"),
     path("home/", views.home, name="home"),
-    path("test_api/", views.test_api, name="test_api"),
-    path("clear_table/", views.clear_table, name="clear_table"),
+    path("search_bookshelf/", views.search_bookshelf, name="search_bookshelf"),
     path("search_novel/", views.search_novel, name="search_novel"),
     path("search_author/", views.search_author, name="search_author"),
     path("search_category/", views.search_category, name="search_category"),
