@@ -13,6 +13,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
+from datetime import date
 
 
 def home(request):
@@ -312,8 +313,16 @@ def bookshelfs(request):
         return JsonResponse(folders, status=200, json_dumps_params={'ensure_ascii': False})
 
 
+@login_required
 def my_bookshelf(request, user_id):
     return render(request, 'bookshelf_c.html', {'user_id': user_id})
+
+
+@login_required
+def daily(request):
+    user_id = request.user.id 
+    today = date.today()
+    return render(request, 'daily.html', {'user_id': user_id, 'today': today})
 
 
 def search_bookshelf(request):
@@ -332,5 +341,30 @@ def search_bookshelf(request):
             return result
 
 
+def daily_novel(request):
+    if request.method == 'GET':
+        today = date.today()
+        date_query = Q('match', date = today)
+        s = NovelsDocument.search().query('bool', must=[date_query])
+        results =[]
+        for hit in s:
+            result = {
+                "title": hit.title,
+                "author": hit.author,
+                "tags": hit.tags,
+                "outline": hit.outline,
+                "url": hit.url,
+                "category": hit.category,
+                "year": hit.year,
+                "size": hit.size,
+                "date": hit.date,
+            }
+            results.append(result) 
+        if len(results) == 0:
+            not_found = [{ "message": "抱歉今日沒有新的完結佳作！"}]
+            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        else:
+            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        return results
 
 
