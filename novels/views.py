@@ -13,7 +13,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
-from datetime import date
+from datetime import date, timedelta
 
 
 def home(request):
@@ -344,7 +344,8 @@ def search_bookshelf(request):
 def daily_novel(request):
     if request.method == 'GET':
         today = date.today()
-        date_query = Q('match', date = today)
+        yesterday = today - timedelta(days=1)
+        date_query = Q('match', date = yesterday)
         s = NovelsDocument.search().query('bool', must=[date_query])
         results =[]
         for hit in s:
