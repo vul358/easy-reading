@@ -282,10 +282,13 @@ def mark(request):
             bookshelf_object.user_id = user
             bookshelf_object.save()
         else:
-            if check.bookshelf != bookshelf_status or check.folder != folder:
-                check.bookshelf = bookshelf_status
-                check.folder = folder
-                check.save()
+            if bookshelf_status == 'deleted':
+                check.delete()
+            else:
+                if check.bookshelf != bookshelf_status or check.folder != folder:
+                    check.bookshelf = bookshelf_status
+                    check.folder = folder
+                    check.save()
         if bookshelf_status == 'done':      
             title_query = Q('match', title=title)
             author_query = Q('match', author = author)
