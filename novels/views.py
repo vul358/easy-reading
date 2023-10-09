@@ -393,10 +393,11 @@ def daily_novel(request):
 def ranking_novel(request):
     if request.method == 'GET':
         category = request.GET.get('category','')
-        date_query = Q('match', date = yesterday)
-        s = NovelsDocument.search().query('bool', must=[date_query])
+        category_query = Q() if not category else Q('match', category_kw=category)
+        s = NovelsDocument.search().query('bool', must=[category_query])
+        s = s.sort({"comment": {"order":"desc"}})
         results =[]
-        for hit in s:
+        for hit in s[0:10]:
             result = {
                 "title": hit.title,
                 "author": hit.author,
@@ -409,9 +410,5 @@ def ranking_novel(request):
                 "date": hit.date,
             }
             results.append(result) 
-        if len(results) == 0:
-            not_found = [{ "message": "抱歉今日沒有新的完結佳作！"}]
-            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
-        else:
-            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results

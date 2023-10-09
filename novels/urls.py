@@ -18,5 +18,6 @@ urlpatterns = [
     path("daily/", views.daily, name="daily"),
     path("daily_novel/", views.daily_novel, name="daily_novel"),
     path("ranking/", views.ranking, name="ranking"),
+    path("ranking_novel/", views.ranking_novel, name="ranking_novel"),
     path('favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
 ]

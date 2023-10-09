@@ -207,8 +207,13 @@
                     </h2>
                     <div id="book_${book.id}_body" class="accordion-collapse collapse" data-bs-parent="#book_${book.id}">
                         <div class="accordion-body">
+                        <p>
                         <strong><a href="${book.url}" target="_blank" >[前往閱讀]</a></strong>
-                        <br />
+                        </p>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="number" class="form-control" placeholder="閱讀頁數" aria-label="閱讀頁數" aria-describedby="book_${book.id}_page">
+                            <button class="btn btn-outline-secondary" type="button" id="book_${book.id}_page">更新頁數</button>
+                        </div>
                         ${book.outline}
                         </div>
                     </div>

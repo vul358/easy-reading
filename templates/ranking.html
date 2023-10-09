@@ -116,8 +116,37 @@
     </nav>
     <div  class="page-content">
       <span class="badge bg-secondary"><h5>站內熱門排行榜TOP 10</h5></span>
-  <p class="lead">
-    
+  <p class="lead" style="padding-top: 10px;">
+    <input type="radio" class="btn-check" name="options-outlined" id="all" autocomplete="off" checked value="">
+    <label class="btn btn-outline-success" for="all">全部</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="love" autocomplete="off" value="言情">
+    <label class="btn btn-outline-success" for="love">言情</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="bl" autocomplete="off" value="耽美">
+    <label class="btn btn-outline-success" for="bl">耽美</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="gl" autocomplete="off" value="百合">
+    <label class="btn btn-outline-success" for="gl">百合</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="fight" autocomplete="off" value="武俠">
+    <label class="btn btn-outline-success" for="fight">武俠</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="god" autocomplete="off" value="玄幻">
+    <label class="btn btn-outline-success" for="god">玄幻</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="tech" autocomplete="off" value="科幻">
+    <label class="btn btn-outline-success" for="tech">科幻</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="horro" autocomplete="off" value="恐怖">
+    <label class="btn btn-outline-success" for="horro">恐怖</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="mystry" autocomplete="off" value="推理">
+    <label class="btn btn-outline-success" for="mystry">推理</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="history" autocomplete="off" value="歷史">
+    <label class="btn btn-outline-success" for="history">歷史</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="military" autocomplete="off" value="軍事">
+    <label class="btn btn-outline-success" for="military">軍事</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="life" autocomplete="off" value="生活">
+    <label class="btn btn-outline-success" for="life">生活</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="art" autocomplete="off" value="文學">
+    <label class="btn btn-outline-success" for="art">文學</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="learn" autocomplete="off" value="學習">
+    <label class="btn btn-outline-success" for="learn">學習</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="other" autocomplete="off" value="其它">
+    <label class="btn btn-outline-success" for="other">其它</label>
     <h5>
       <!-- <small class="text-body-secondary">今天想看什麼文？</small> -->
     </h5>
@@ -264,15 +293,24 @@
       }
     }}
 
-    function fetchNew() {
-      fetch("/novels/daily_novel/")
+    function fetchHot(category) {
+      fetch("/novels/ranking_novel/?category=" + encodeURIComponent(category))
         .then(resp => resp.json())
         .then(data => insertBooks(data, "books"))
         .catch(error => console.error("Error fetching products:", error));
     }
 
-    fetchNew();
-  
+    let category = "";
+    fetchHot(category);
+
+    const categories = document.querySelectorAll('.btn-check');
+    categories.forEach(category => {
+      category.addEventListener('click', function() {
+        const cat = this.value;
+        fetchHot(cat);
+    })
+  })
+
     </script>
   </div>
   </body>
