@@ -207,9 +207,9 @@ def search_category(request):
         if len(exclude_titles) > 0:
             if title:
                 exclude_titles.append(title)
-            bool_query = Q('bool', must=[Q('match', category=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
+            bool_query = Q('bool', must=[Q('match', category_kw=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
         else:
-            bool_query = Q('bool', must=[Q('match', category=category), year_query])
+            bool_query = Q('bool', must=[Q('match', category_kw=category), year_query])
         if tag:
             bool_query.should.append(Q('match', tags=tag))
         s = NovelsDocument.search().query(bool_query)
@@ -335,11 +335,15 @@ def my_bookshelf(request, user_id):
     return render(request, 'bookshelf_c.html', {'user_id': user_id})
 
 
-@login_required
 def daily(request):
     user_id = request.user.id 
     today = date.today()
     return render(request, 'daily.html', {'user_id': user_id, 'today': today})
+
+
+def ranking(request):
+    user_id = request.user.id 
+    return render(request, 'ranking.html', {'user_id': user_id})
 
 
 def search_bookshelf(request):
@@ -386,3 +390,28 @@ def daily_novel(request):
         return results
 
 
+def ranking_novel(request):
+    if request.method == 'GET':
+        category = request.GET.get('category','')
+        date_query = Q('match', date = yesterday)
+        s = NovelsDocument.search().query('bool', must=[date_query])
+        results =[]
+        for hit in s:
+            result = {
+                "title": hit.title,
+                "author": hit.author,
+                "tags": hit.tags,
+                "outline": hit.outline,
+                "url": hit.url,
+                "category": hit.category,
+                "year": hit.year,
+                "size": hit.size,
+                "date": hit.date,
+            }
+            results.append(result) 
+        if len(results) == 0:
+            not_found = [{ "message": "抱歉今日沒有新的完結佳作！"}]
+            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        else:
+            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        return results

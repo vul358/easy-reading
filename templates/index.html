@@ -97,6 +97,12 @@
         </button> -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/novels/ranking">熱門排行</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/novels/daily">今日新書</a>
+            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
                 推薦設定
@@ -105,7 +111,7 @@
                 <li>
                   <label  class="dropdown-item">作品年份</label>
                   <select class="dropdown-item" id="year">
-                  <option value="">全部</option>"
+                  <option selected value="">全部</option>
                   <option>2016</option>
             　　   <option>2017</option>
             　　   <option>2018</option>
@@ -117,7 +123,7 @@
                 </select>
                 </li>
                 <li><label  class="dropdown-item">預估閱讀時間</label>
-                  <select class="form-select" id="size">
+                  <select class="dropdown-item" id="size">
                     <option selected value="">全部</option>
                     <option value="2h">2小時內</option>
                     <option value="5h">2~5小時</option>
@@ -126,8 +132,6 @@
                     <option value="max">20小時以上</option>
                   </select>
                 </li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="/novels/daily">今日新書</a></li>
               </ul>
             </li>
             <li class="nav-item">
