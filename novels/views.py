@@ -333,7 +333,8 @@ def bookshelfs(request):
 
 
 @login_required
-def my_bookshelf(request, user_id):
+def my_bookshelf(request):
+    user_id = request.user.id 
     return render(request, 'bookshelf_c.html', {'user_id': user_id})
 
 

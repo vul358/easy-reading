@@ -135,7 +135,7 @@
               </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'my_bookshelf' user_id=user_id %}">我的書櫃</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'my_bookshelf'%}">我的書櫃</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'account_logout' %}">登出</a>
@@ -180,7 +180,7 @@
       <option>生活</option>
       <option>學習</option>
       <option>文學</option>
-      <option>其他</option>
+      <option>其它</option>
     </select>
     <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
     <input type="text" id="input0" list="tag" class="form-select" pattern="[\\u4e00-\\u9fa5]+" title="請輸入繁體中文">
