@@ -26,11 +26,23 @@
   margin-bottom: 5px;
 }
 
+.year {
+  font-size: 1rem;
+  color: #666;
+  font-weight: normal;
+  margin-bottom: 10px;
+  float: right;
+}
+
 /* 书籍作者 */
 .author {
   font-size: 1rem;
   color: #666;
   margin-bottom: 10px;
+}
+.size {
+  font-size: 0.8rem;
+  float: right;
 }
 
 /* 书籍分类 */
@@ -191,6 +203,11 @@
 
     <script>
       // var user = '{{ user_id }}';
+      function readingTime(size) {
+        let readingHours = Math.floor(size / 100 * 50 / 60);
+        return `預估閱讀時間：約${readingHours}~${readingHours+1}小時`;
+      }
+      
       function alertLogin(clickID, appendID) {
       const test = document.getElementById(clickID);
       let svgContainer = null;
@@ -247,6 +264,14 @@
           const bookName = document.createElement("div");
           bookName.className = "title";
           bookName.textContent = item.title;
+
+          const bookYear = document.createElement("span");
+          bookYear.className = "year";
+          bookYear.textContent = item.date;
+
+          const bookSize = document.createElement("span");
+          bookSize.className = "size";
+          bookSize.textContent = readingTime(item.size);
 
           const author = document.createElement("div");
           author.className = "author";
@@ -340,7 +365,9 @@
           });
 
           bookDiv.appendChild(bookName);
+          bookName.appendChild(bookYear);
           bookDiv.appendChild(author);
+          author.appendChild(bookSize);
           bookDiv.appendChild(cat);
           bookDiv.appendChild(tags)
           bookDiv.appendChild(outline);

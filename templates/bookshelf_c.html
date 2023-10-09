@@ -91,6 +91,22 @@
         .red {
             color:red;
         }
+        .image-rotate {
+            animation: rotation 4s infinite linear;
+        }
+
+        .image-rotate:hover {
+            animation: rotation 2s infinite linear;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(359deg);
+            }
+        }
     </style>
     <title>我的書櫃{{user_id}}</title>
 </head>
@@ -159,6 +175,9 @@
             <li id="blocked-shelf" class="shelf col list-group-item">
                 <div class="shelf-header list-group-item list-group-item-danger"><h4>黑名單</h4></div>
                 <ul id="blocked" class="shelf-container list-group col"></ul>
+            </li>
+            <li id="blackhole" class="shelf col list-group-item col-1">
+                <img id="deleted" src="{% static 'img/blackhole-11.1s-200px.png' %}" class="shelf-container image-rotate" title="刪除書本的黑洞"> 
             </li>
         </ul>
     </div>
@@ -284,6 +303,10 @@
                 },
                 removeOnSpill: false,
             }).on('drop', (el, target, source) => {
+                // // check if target container is blackhole or not
+                // if (target.className.match(/image-rotate/)){
+                //     const data 
+                // }
                 // check if target container is a folder
                 let folderName;
                 if (target.className.match(/folder-container/)) {
