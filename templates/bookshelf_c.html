@@ -208,11 +208,11 @@
                     <div id="book_${book.id}_body" class="accordion-collapse collapse" data-bs-parent="#book_${book.id}">
                         <div class="accordion-body">
                         <p>
-                        <strong><a href="${book.url}" target="_blank" >[前往閱讀]</a></strong>
+                        <strong><a href="${book.url}" target="_blank" id="${book.id}_url" >[前往閱讀:<span>${book.url_page || 1}</span>頁]</a></strong>
                         </p>
                         <div class="input-group input-group-sm mb-3">
                             <input type="number" class="form-control" placeholder="閱讀頁數" aria-label="閱讀頁數" aria-describedby="book_${book.id}_page">
-                            <button class="btn btn-outline-secondary" type="button" id="book_${book.id}_page">更新頁數</button>
+                            <button class="btn btn-outline-secondary update" type="button" id="book_${book.id}_page" data-id="${book.id}">更新頁數</button>
                         </div>
                         ${book.outline}
                         </div>
@@ -308,11 +308,6 @@
                 },
                 removeOnSpill: false,
             }).on('drop', (el, target, source) => {
-                // // check if target container is blackhole or not
-                // if (target.className.match(/image-rotate/)){
-                //     const data 
-                // }
-                // check if target container is a folder
                 let folderName;
                 if (target.className.match(/folder-container/)) {
                     folderName = target.dataset.name
@@ -338,23 +333,40 @@
                 };
                 markBook(data);
             })
-        } 
+        };
+        function bindPageUpdate () {
+            if (_bookshelfStatus < 4) {
+                setTimeout(bindPageUpdate, 500);
+                return;
+            }
+            const updateUrl = document.querySelectorAll('.update');
+            updateUrl.forEach(update => {
+                update.addEventListener('click', () => {
+                    const page = update.previousElementSibling.value;
+                    const novel_id = update.dataset.id;
+                    fetchUrl(page, novel_id);
+                    update.previousElementSibling.value = "";
+                    document.querySelector(`a[id="${novel_id}_url"] span`).innerHTML = page;
+                })
+            })
+        }
         function initialize () {
             loadBooks("pending", user_id);
             loadBooks("blocked", user_id);
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
             startDragula();
+            bindPageUpdate();
         }
         initialize();
 
         const search_title = document.getElementById("search");
         search_title.addEventListener("click", () => {
-        const searchTitle = document.getElementById("searchTitle").value;
-        if (searchTitle) {
-          fetchBook(searchTitle);
-        }
-    })
+            const searchTitle = document.getElementById("searchTitle").value;
+            if (searchTitle) {
+            fetchBook(searchTitle);
+            }
+        })
 
         function fetchBook(title) {
             fetch("/novels/search_bookshelf/?user_id=" + user_id + "&title=" + encodeURIComponent(title))
@@ -379,6 +391,18 @@
             }
         }
 
+        function fetchUrl(page, novel_id) {
+            fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
+            .then(resp => resp.json())
+            .then(data => newUrl(data['url'], novel_id))
+            .catch(error => console.error("Error fetching products:", error));
+        }
+
+        function newUrl(url, novel_id) {
+            const elId = `${novel_id}_url`;
+            const el = document.getElementById(elId);
+            el.href = url;
+        }
 
 
     </script>

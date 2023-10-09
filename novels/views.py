@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from datetime import date, timedelta
+import re
 
 
 def home(request):
@@ -324,7 +325,8 @@ def bookshelfs(request):
                 "author": novel.author,
                 "outline": novel.outline,
                 "category": novel.category,
-                "url": novel.url
+                "url": novel.url,
+                'url_page': book.url_page,
             }
             folders[folder_name].append(result)
         return JsonResponse(folders, status=200, json_dumps_params={'ensure_ascii': False})
@@ -412,3 +414,33 @@ def ranking_novel(request):
             results.append(result) 
         results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
+
+
+def update_url(request):
+    if request.method == 'GET':
+        user = request.GET['user_id']
+        bookID = request.GET['book_id']
+        page = request.GET['page']
+        if page:
+            book = Bookshelf.objects.get(user_id=user, novel_id=bookID)
+            book.url_page = page
+            book.save()
+            novel_url = ChosenNovels.objects.get(id=bookID).url
+            pattern = r'https://www.sto.cx/(book-\d+-)'
+            pattern1 = r'https://www.sto.cx/(serial/sbook.aspx\?bid=\d+&page=)'
+            match = re.match(pattern, novel_url)
+            match1 = re.match(pattern1, novel_url)
+            if match:
+                url = 'https://www.sto.cx/'+match.group(1) + page + '.html'
+            elif match1:
+                url = 'https://www.sto.cx/'+match1.group(1) + page
+            else:
+                url = novel_url
+            result = {"url": url}
+            return JsonResponse(result, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
+
+
+
+
