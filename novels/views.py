@@ -208,9 +208,9 @@ def search_category(request):
         if len(exclude_titles) > 0:
             if title:
                 exclude_titles.append(title)
-            bool_query = Q('bool', must=[Q('match', category_kw=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
+            bool_query = Q('bool', must=[Q('match', category=category), year_query], must_not=[Q('match', title=title) for title in exclude_titles])
         else:
-            bool_query = Q('bool', must=[Q('match', category_kw=category), year_query])
+            bool_query = Q('bool', must=[Q('match', category=category), year_query])
         if tag:
             bool_query.should.append(Q('match', tags=tag))
         s = NovelsDocument.search().query(bool_query)
@@ -396,7 +396,7 @@ def daily_novel(request):
 def ranking_novel(request):
     if request.method == 'GET':
         category = request.GET.get('category','')
-        category_query = Q() if not category else Q('match', category_kw=category)
+        category_query = Q() if not category else Q('match', category=category)
         s = NovelsDocument.search().query('bool', must=[category_query])
         s = s.sort({"comment": {"order":"desc"}})
         results =[]
