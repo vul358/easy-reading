@@ -18,9 +18,12 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView
 
+from novels import views
+
 urlpatterns = [
     path("novels/", include("novels.urls")),
     # path('favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')), # django-allauth網址
+    path('', views.health_check, name='health_check'),
 ]

@@ -441,7 +441,8 @@ def update_url(request):
             return JsonResponse(result, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
-
+def health_check(request):
+    return HttpResponse(status=200)
 
 
 
