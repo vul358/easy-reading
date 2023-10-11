@@ -52,7 +52,7 @@ def get_mappings():
                 "type": "text"
             },
             "category": {
-                "type": "text"
+                "type": "keyword"
             },
             "tags": {
                 "type": "text"
