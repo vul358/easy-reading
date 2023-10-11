@@ -98,41 +98,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/novels/ranking">熱門排行</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/novels/daily">今日新書</a>
             </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                推薦設定
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                <li>
-                  <label  class="dropdown-item">作品年份</label>
-                  <select class="dropdown-item" id="year">
-                  <option selected value="">全部</option>
-                  <option>2016</option>
-            　　   <option>2017</option>
-            　　   <option>2018</option>
-                  <option>2019</option>
-                  <option>2020</option>
-                  <option>2021</option>
-                  <option>2022</option>
-                  <option>2023</option>
-                </select>
-                </li>
-                <li><label  class="dropdown-item">預估閱讀時間</label>
-                  <select class="dropdown-item" id="size">
-                    <option selected value="">全部</option>
-                    <option value="2h">2小時內</option>
-                    <option value="5h">2~5小時</option>
-                    <option value="10h">5~10小時</option>
-                    <option value="20h">10~20小時</option>
-                    <option value="max">20小時以上</option>
-                  </select>
-                </li>
-              </ul>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/novels/">回到首頁</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{% url 'my_bookshelf'%}">我的書櫃</a>
@@ -146,89 +115,44 @@
       </div>
     </nav>
     <div  class="page-content">
-  <p class="lead">
-    {% if user_id %}
+      <span class="badge bg-secondary"><h5>站內熱門排行榜TOP 10</h5></span>
+  <p class="lead" style="padding-top: 10px;">
+    <input type="radio" class="btn-check" name="options-outlined" id="all" autocomplete="off" checked value="">
+    <label class="btn btn-outline-success" for="all">全部</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="love" autocomplete="off" value="言情">
+    <label class="btn btn-outline-success" for="love">言情</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="bl" autocomplete="off" value="耽美">
+    <label class="btn btn-outline-success" for="bl">耽美</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="gl" autocomplete="off" value="百合">
+    <label class="btn btn-outline-success" for="gl">百合</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="fight" autocomplete="off" value="武俠">
+    <label class="btn btn-outline-success" for="fight">武俠</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="god" autocomplete="off" value="玄幻">
+    <label class="btn btn-outline-success" for="god">玄幻</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="tech" autocomplete="off" value="科幻">
+    <label class="btn btn-outline-success" for="tech">科幻</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="horro" autocomplete="off" value="恐怖">
+    <label class="btn btn-outline-success" for="horro">恐怖</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="mystry" autocomplete="off" value="推理">
+    <label class="btn btn-outline-success" for="mystry">推理</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="history" autocomplete="off" value="歷史">
+    <label class="btn btn-outline-success" for="history">歷史</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="military" autocomplete="off" value="軍事">
+    <label class="btn btn-outline-success" for="military">軍事</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="life" autocomplete="off" value="生活">
+    <label class="btn btn-outline-success" for="life">生活</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="art" autocomplete="off" value="文學">
+    <label class="btn btn-outline-success" for="art">文學</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="learn" autocomplete="off" value="學習">
+    <label class="btn btn-outline-success" for="learn">學習</label>
+    <input type="radio" class="btn-check" name="options-outlined" id="other" autocomplete="off" value="其它">
+    <label class="btn btn-outline-success" for="other">其它</label>
     <h5>
-      <small class="text-body-secondary">嗨，{{ username }}！今天想看什麼文？</small>
+      <!-- <small class="text-body-secondary">今天想看什麼文？</small> -->
     </h5>
-    {% endif %}
   </p>
-  <div class="col-6">
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">喜歡的文</span>
-    <input type="text" id="title" class="form-control" placeholder="輸入種子小說書名（選填）" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
-  </div>
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon2">喜歡的作者</span>
-    <input type="text" id="author" class="form-control" placeholder="輸入種子小說作者" aria-label="輸入種子小說作者" aria-describedby="basic-addon1">
-  </div>
-</div>
-<div class="col-6">
-  <div class="input-group mb-3">
-    <label class="input-group-text" for="inputGroupSelect01">選取作品類別</label>
-    <select class="form-select" id="category">
-      <option selected>言情</option>
-　　   <option>耽美</option>
-　　   <option>百合</option>
-      <option>武俠</option>
-      <option>玄幻</option>
-      <option>科幻</option>
-      <option>恐怖</option>
-      <option>推理</option>
-      <option>歷史</option>
-      <option>軍事</option>
-      <option>生活</option>
-      <option>學習</option>
-      <option>文學</option>
-      <option>其它</option>
-    </select>
-    <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
-    <input type="text" id="input0" list="tag" class="form-select" pattern="[\\u4e00-\\u9fa5]+" title="請輸入繁體中文">
-    <datalist id="tag">
-      <option selected>快穿</option>
-　　   <option>爽文</option>
-　　   <option>種田</option>
-      <option>輕鬆</option>
-      <option>強強</option>
-      <option>正劇</option>
-      <option>忠犬</option>
-      <option>甜文</option>
-      <option>星際</option>
-      <option>無限</option>
-      <option>直播</option>
-      <option>火葬場</option>
-      <option>破鏡重圓</option>
-      <option>天作之合
-      </option>
-    </datalist>
-    <button type="button" id="search_0" class="btn btn-secondary">找好文</button>
-  </div>
-</div>
-
-      <span class="badge bg-secondary"><h5>同作者的其他作品</h5></span>
-      <div id="novels">
-      </div>
-    <br>
-    <span class="badge bg-secondary"><h5>同類別的推薦作品</h5></span>
-      <div id="categories">
-      </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="col-6">
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
-      <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1" pattern="[\\u4e00-\\u9fa5]+" title="請輸入繁體中文">
-      <button type="button" id="search" class="btn btn-secondary" >登登登</button>
-      <div class="invalid-feedback" style="padding-left: 138px;">
-        請輸入繁體中文唷
-      </div>
-    </form>
-    </div>
-    </div>
+  
     <div id="books"></div>
-
 
     <script>
       var user = '{{ user_id }}';
@@ -369,71 +293,24 @@
       }
     }}
 
-    function fetchProducts(term, year, size) {
-      fetch("/novels/search_novel/?term=" + encodeURIComponent(term) + "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
+    function fetchHot(category) {
+      fetch("/novels/ranking_novel/?category=" + encodeURIComponent(category))
         .then(resp => resp.json())
         .then(data => insertBooks(data, "books"))
         .catch(error => console.error("Error fetching products:", error));
     }
 
-    // 檢查輸入是否是繁體中文
-    function checkChinese(inputElement) {
-      const chinesePattern = /^[\u4e00-\u9fa5]+$/;
-      const inputValue = inputElement.value;
-      if (chinesePattern.test(inputValue)) {
-        inputElement.className = inputElement.className.replace('is-invalid');
-        return true;
-      } else {
-        inputElement.className += " is-invalid";
-        return false;
-      }
-    }
-      
-    const search_novel = document.getElementById("search");
-    search_novel.addEventListener("click", () => {
-        const term = document.getElementById("term");
-        if (checkChinese(term)) {
-          const year = document.getElementById("year").value;
-          const size = document.getElementById("size").value;
-          fetchProducts(term.value, year, size)
-        }
+    let category = "";
+    fetchHot(category);
+
+    const categories = document.querySelectorAll('.btn-check');
+    categories.forEach(category => {
+      category.addEventListener('click', function() {
+        const cat = this.value;
+        fetchHot(cat);
     })
+  })
 
-
-    function fetchNovels(author, title, year, size) {
-      fetch("/novels/search_author/?author=" + encodeURIComponent(author) + "&title=" + encodeURIComponent(title)+ "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
-        .then(resp => resp.json())
-        .then(data => insertBooks(data, "novels"))
-        .catch(error => console.error("Error fetching products:", error));
-    }
-
-    const search_book = document.getElementById("search_0");
-    search_book.addEventListener("click", () => {
-        const author = document.getElementById("author").value;
-        const title = document.getElementById("title").value;
-        const year = document.getElementById("year").value;
-        const size = document.getElementById("size").value;
-        fetchNovels(author, title, year, size)
-    })
-
-
-    function fetchCategories(category, tag, title, year, size) {
-      fetch("/novels/search_category/?category=" + encodeURIComponent(category) + "&tag=" + encodeURIComponent(tag) + "&title=" + encodeURIComponent(title) + "&user_id=" + user + "&size=" + encodeURIComponent(size) + "&year=" + year)
-        .then(resp => resp.json())
-        .then(data => insertBooks(data, "categories"))
-        .catch(error => console.error("Error fetching products:", error));
-    }
-
-    const search_category = document.getElementById("search_0");
-    search_category.addEventListener("click", () => {
-        const category = document.getElementById("category").value;
-        const tag = document.getElementById("input0").value;
-        const title = document.getElementById("title").value;
-        const year = document.getElementById("year").value;
-        const size = document.getElementById("size").value;
-        fetchCategories(category, tag, title, year, size)
-    })
-  
     </script>
   </div>
   </body>

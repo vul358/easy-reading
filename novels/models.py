@@ -15,6 +15,7 @@ class Bookshelf(models.Model):
     novel = models.ForeignKey(ChosenNovels, on_delete=models.CASCADE)
     bookshelf = models.CharField(max_length=200)
     folder = models.CharField(max_length=200)
+    url_page = models.IntegerField(blank=True, null=True)
 
 
 class TestNovel(models.Model):
