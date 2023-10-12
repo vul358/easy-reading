@@ -15,6 +15,7 @@ from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from datetime import date, timedelta
 import re
+import base64
 
 
 def home(request):
@@ -335,7 +336,8 @@ def bookshelfs(request):
 @login_required
 def my_bookshelf(request):
     user_id = request.user.id 
-    return render(request, 'bookshelf_c.html', {'user_id': user_id})
+    username = request.user.username
+    return render(request, 'bookshelf_c.html', {'user_id': user_id, 'user_name': username})
 
 
 def daily(request):
@@ -443,6 +445,24 @@ def update_url(request):
 
 def health_check(request):
     return HttpResponse(status=200)
+
+
+def bookshelf_share(request, encoded_data):
+    decoded_data = base64.urlsafe_b64decode(encoded_data.encode("utf-8")).decode("utf-8")
+    user_id, user_name = decoded_data.split(":")
+    return render(request, 'bookshelf_s.html', {'user_id': user_id, 'user_name': user_name})
+
+
+def bookshelf_url(request):
+    if request.method == 'GET':
+        user_id = request.GET['user_id']
+        user_name = request.GET['user_name']
+        encoded_data = f"{user_id}:{user_name}".encode("utf-8")
+        encoded_data = base64.urlsafe_b64encode(encoded_data).decode("utf-8")
+        result = {'bookshelf_url': f"https://novel.likedream.life/novels/bookshelf_share/{encoded_data}"}
+        return JsonResponse(result, status = 200, safe=False)
+
+
 
 
 

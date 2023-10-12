@@ -111,7 +111,7 @@
             text-align: center;
         }
     </style>
-    <title>我的書櫃</title>
+    <title>{{user_name}}的書櫃</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -119,22 +119,8 @@
           <a class="navbar-brand">Easy Reading 輕鬆看文</a>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-              <!-- <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                  推薦設定
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">閱讀時間</a></li>
-                  <li><a class="dropdown-item" href="#">小說年份</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">今日新書</a></li>
-                </ul> -->
-              <!-- </li> -->
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/novels/">回到首頁</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'account_logout' %}">登出</a>
+                <a class="nav-link active" aria-current="page" href="/novels/home">前往首頁</a>
               </li>
             </ul>
             <div class="d-flex" >
@@ -146,11 +132,12 @@
       </nav>
       <p class="lead">
     </p>
+        {% if user_name %}
+        <h5 class="centered-title">
+          <small class="text-body-secondary" style="text-align: center">{{ user_name }}的書櫃 ʕ⸝⸝⸝˙Ⱉ˙ʔ *｡ 歡迎光臨 </small>
+        </h5>
+        {% endif %}
 
-    <div class="centered-title">
-        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="連結已複製" id="shelfButton">分享我的書櫃 ʕ⸝⸝⸝˙Ⱉ˙ʔ *｡</button>
-    </div>
-       
     <div class="main-container container text-center">
         <ul class="sheives row">
             <li id="pending-shelf" class="shelf col list-group-item">
@@ -186,15 +173,10 @@
                 <div class="shelf-header list-group-item list-group-item-danger"><h4>黑名單</h4></div>
                 <ul id="blocked" class="shelf-container list-group col"></ul>
             </li>
-            <li id="blackhole" class="shelf col list-group-item col-1">
-                <img id="deleted" src="{% static 'img/blackhole-11.1s-200px.png' %}" class="shelf-container image-rotate" title="刪除書本的黑洞"> 
-            </li>
         </ul>
     </div>
     <script>
         const user_id = '{{user_id}}';
-        const user_name = '{{user_name}}';
-
         let drake;
         let _bookshelfStatus = 0
         function getContainers () {
@@ -209,7 +191,7 @@
             bookLi.setAttribute("data-url", book.url);
             bookLi.setAttribute("data-category", book.category);
             const url = book.url;
-
+            
             bookLi.innerHTML = `
             <div class="accordion" id="book_${book.id}">
                 <div class="accordion-item">
@@ -224,10 +206,6 @@
                         <p>
                         <strong><a href="${book.url}" target="_blank" id="${book.id}_url" >[前往閱讀:<span>${book.url_page || 1}</span>頁]</a></strong>
                         </p>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="number" class="form-control" placeholder="閱讀頁數" aria-label="閱讀頁數" aria-describedby="book_${book.id}_page">
-                            <button class="btn btn-outline-secondary update" type="button" id="book_${book.id}_page" data-id="${book.id}">更新頁數</button>
-                        </div>
                         ${book.outline}
                         </div>
                     </div>
@@ -258,13 +236,8 @@
                     if (folder === 'no_folder') {
                         books.forEach(book => displayBook(book, bookshelfElement));
                     } else {
-                        // if (folder === 'folder-good' || folder === 'folder-bad' || folder === 'folder_noraml') {
-                        //     const folderExist = getElementById(folder);
-                        //     books.forEach(book => displayBook(book, folderExist));
-                        // } else {
                         const folderElement = createFolder(bookshelfElement, folder);
                         books.forEach(book => displayBook(book, folderElement));
-                    // }
                 }});
                 _bookshelfStatus += 1;
             })
@@ -272,105 +245,105 @@
                 console.error('獲取數據時出現錯誤:', error);
             });
         }
-        function addFolder(inputId) {
-            const $input = document.getElementById(inputId)
-            const folderName = $input.value
-            if (folderName.length > 0) {
-                const shelfName = $input.id.split('-')[0]
-                const $shelf = document.getElementById(shelfName)
-                createFolder($shelf, folderName);
-                $input.value = ''
-                drake.containers.splice()
-                getContainers().forEach(c => { drake.containers.push(c) })
-            }
-        }
-        function markBook (data) {
-            const api = "/novels/mark/";
-            fetch(api, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("There was a problem with the fetch operation:", error);
-            });
-        }
-        function startDragula () {
-            if (_bookshelfStatus < 4) {
-                setTimeout(startDragula, 500);
-                return;
-            }
-            const containers = [];
-            getContainers().forEach(container => { containers.push(container); });
-            drake = dragula(containers, {
-                accepts: function (el, target, source, sibling) {
-                    if (/folder/.test(el.className)) {
-                        const belongs = el.className.match(/\w+-shelf/).pop()
-                        return belongs.startsWith(target.id) && !/folder/.test(target.className) ? true : false
-                    } else { return true }
-                },
-                removeOnSpill: false,
-            }).on('drop', (el, target, source) => {
-                let folderName;
-                if (target.className.match(/folder-container/)) {
-                    folderName = target.dataset.name
-                } else {
-                    folderName = null;
-                }
-                // check which bookshelf to move
-                let bookshelfId;
-                if (folderName) {
-                    bookshelfId = target.closest('.shelf-container').id;
-                } else {
-                    bookshelfId = target.id;
-                }
-                const data = {
-                    "user_id": user_id,
-                    "bookshelf": bookshelfId,
-                    "title": el.dataset.title,
-                    "author": el.dataset.author,
-                    "outline": el.dataset.outline,
-                    "url": el.dataset.url,
-                    "category": el.dataset.category,
-                    "folder": folderName,
-                };
-                markBook(data);
-            })
-        };
-        function bindPageUpdate () {
-            if (_bookshelfStatus < 4) {
-                setTimeout(bindPageUpdate, 500);
-                return;
-            }
-            const updateUrl = document.querySelectorAll('.update');
-            updateUrl.forEach(update => {
-                update.addEventListener('click', () => {
-                    const page = update.previousElementSibling.value;
-                    const novel_id = update.dataset.id;
-                    fetchUrl(page, novel_id);
-                    update.previousElementSibling.value = "";
-                    document.querySelector(`a[id="${novel_id}_url"] span`).innerHTML = page;
-                })
-            })
-        }
+        // function addFolder(inputId) {
+        //     const $input = document.getElementById(inputId)
+        //     const folderName = $input.value
+        //     if (folderName.length > 0) {
+        //         const shelfName = $input.id.split('-')[0]
+        //         const $shelf = document.getElementById(shelfName)
+        //         createFolder($shelf, folderName);
+        //         $input.value = ''
+        //         drake.containers.splice()
+        //         getContainers().forEach(c => { drake.containers.push(c) })
+        //     }
+        // }
+        // function markBook (data) {
+        //     const api = "/novels/mark/";
+        //     fetch(api, {
+        //         method: "POST",
+        //         body: JSON.stringify(data),
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //     })
+        //     .then(response => {
+        //         if(!response.ok){
+        //             throw new Error("Network response was not ok");
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         console.log(data);
+        //     })
+        //     .catch(error => {
+        //         console.error("There was a problem with the fetch operation:", error);
+        //     });
+        // }
+        // function startDragula () {
+        //     if (_bookshelfStatus < 4) {
+        //         setTimeout(startDragula, 500);
+        //         return;
+        //     }
+        //     const containers = [];
+        //     getContainers().forEach(container => { containers.push(container); });
+        //     drake = dragula(containers, {
+        //         accepts: function (el, target, source, sibling) {
+        //             if (/folder/.test(el.className)) {
+        //                 const belongs = el.className.match(/\w+-shelf/).pop()
+        //                 return belongs.startsWith(target.id) && !/folder/.test(target.className) ? true : false
+        //             } else { return true }
+        //         },
+        //         removeOnSpill: false,
+        //     }).on('drop', (el, target, source) => {
+        //         let folderName;
+        //         if (target.className.match(/folder-container/)) {
+        //             folderName = target.dataset.name
+        //         } else {
+        //             folderName = null;
+        //         }
+        //         // check which bookshelf to move
+        //         let bookshelfId;
+        //         if (folderName) {
+        //             bookshelfId = target.closest('.shelf-container').id;
+        //         } else {
+        //             bookshelfId = target.id;
+        //         }
+        //         const data = {
+        //             "user_id": user_id,
+        //             "bookshelf": bookshelfId,
+        //             "title": el.dataset.title,
+        //             "author": el.dataset.author,
+        //             "outline": el.dataset.outline,
+        //             "url": el.dataset.url,
+        //             "category": el.dataset.category,
+        //             "folder": folderName,
+        //         };
+        //         markBook(data);
+        //     })
+        // };
+        // function bindPageUpdate () {
+        //     if (_bookshelfStatus < 4) {
+        //         setTimeout(bindPageUpdate, 500);
+        //         return;
+        //     }
+        //     const updateUrl = document.querySelectorAll('.update');
+        //     updateUrl.forEach(update => {
+        //         update.addEventListener('click', () => {
+        //             const page = update.previousElementSibling.value;
+        //             const novel_id = update.dataset.id;
+        //             fetchUrl(page, novel_id);
+        //             update.previousElementSibling.value = "";
+        //             document.querySelector(`a[id="${novel_id}_url"] span`).innerHTML = page;
+        //         })
+        //     })
+        // }
         function initialize () {
             loadBooks("pending", user_id);
             loadBooks("blocked", user_id);
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
-            startDragula();
-            bindPageUpdate();
+            // startDragula();
+            // bindPageUpdate();
         }
         initialize();
 
@@ -405,75 +378,19 @@
             }
         }
 
-        function fetchUrl(page, novel_id) {
-            fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
-            .then(resp => resp.json())
-            .then(data => newUrl(data['url'], novel_id))
-            .catch(error => console.error("Error fetching products:", error));
-        }
+        // function fetchUrl(page, novel_id) {
+        //     fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
+        //     .then(resp => resp.json())
+        //     .then(data => newUrl(data['url'], novel_id))
+        //     .catch(error => console.error("Error fetching products:", error));
+        // }
 
-        function newUrl(url, novel_id) {
-            const elId = `${novel_id}_url`;
-            const el = document.getElementById(elId);
-            el.href = url;
-        }
+        // function newUrl(url, novel_id) {
+        //     const elId = `${novel_id}_url`;
+        //     const el = document.getElementById(elId);
+        //     el.href = url;
+        // }
 
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl)
-        })
-
-        function shareBookShelf(user_id, user_name){
-            fetch("/novels/bookshelf_url?user_id=" + user_id + "&user_name=" + user_name)
-            .then(resp => resp.json())
-            .then(data => {
-                let bookshelfURL = data['bookshelf_url'];
-                const shelfButton = document.getElementById('shelfButton');
-                shelfButton.setAttribute('data-bs-content', bookshelfURL);
-                var popover = new bootstrap.Popover(shelfButton,{
-                    content:`<a href="${bookshelfURL}" target="_blank">前往預覽</a>`,
-                    html: true
-                });
-                
-                shelfButton.addEventListener('click', function() {
-                var textArea = document.createElement('textarea');
-                textArea.value = bookshelfURL;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            });
-
-            })
-            .catch(error => console.error("Error fetching products:", error));
-        }
-
-        shareBookShelf(user_id, user_name);
-
-        
-
-    //     const shelfButton = document.getElementById('shelfButton');
-    //     shelfButton.setAttribute('data-bs-content', bookshelfURL);
-    //     var popover = new bootstrap.Popover(shelfButton,{
-    //         content:`<a href="${bookshelfURL}" id="copyButton">${bookshelfURL}</a>`,
-    //         html: true
-    //     });
-    //     setTimeout(function () {
-    //     var copyButton = document.getElementById('copyButton');
-    //     if (copyButton) {
-    //         // 复制按钮的点击事件
-    //         copyButton.addEventListener('click', function() {
-    //         var textArea = document.createElement('textarea');
-    //         textArea.value = bookshelfURL;
-    //         document.body.appendChild(textArea);
-    //         textArea.select();
-    //         document.execCommand('copy');
-    //         document.body.removeChild(textArea);
-    //         alert('書櫃連結已複製！');
-    //     });
-            
-    //     }
-    // }, 0);
 
     </script>
 </body>
