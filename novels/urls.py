@@ -22,5 +22,6 @@ urlpatterns = [
     path("update_url/", views.update_url, name="update_url"),
     path("bookshelf_share/<encoded_data>", views.bookshelf_share, name="bookshelf_share"),
     path("bookshelf_url", views.bookshelf_url, name="bookshelf_url"), 
+    path("search_title/", views.search_title, name="search_title"),
     path('favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
 ]
