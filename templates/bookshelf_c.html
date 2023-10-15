@@ -197,8 +197,6 @@
             bookLi.setAttribute("data-outline", book.outline);
             bookLi.setAttribute("data-url", book.url);
             bookLi.setAttribute("data-category", book.category);
-            const url = book.url;
-
             bookLi.innerHTML = `
             <div class="accordion" id="book_${book.id}">
                 <div class="accordion-item">
@@ -223,6 +221,9 @@
                 </div>
             </div>`;
             container.appendChild(bookLi);
+            if (book.url_page){
+                fetchUrl(book.url_page, book.id);
+            }
         };
         function createFolder (bookshelfElement, folderName) {
             const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, '')}`
