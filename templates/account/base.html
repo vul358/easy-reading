@@ -1,0 +1,106 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}{% endblock head_title %}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px; /* 增加页面周围的边距 */
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+  
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+  
+      .header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 0;
+        text-align: center;
+      }
+  
+      .menu {
+        background-color: #444;
+        color: #fff;
+        padding: 10px;
+      }
+  
+      .menu ul {
+        list-style: none;
+        padding: 0;
+      }
+  
+      .menu li {
+        margin-bottom: 10px;
+      }
+  
+      .menu a {
+        color: #fff;
+        text-decoration: none;
+        display: inline-block; /* 使菜单项变成块级元素 */
+        background-color: #000; /* 背景色为黑色 */
+        padding: 5px 10px; /* 按钮内边距 */
+        border-radius: 5px; /* 添加圆角 */
+        transition: background-color 0.3s ease; /* 添加过渡效果 */
+      }
+  
+      .menu a:hover {
+        background-color: #333; /* 鼠标悬停时的背景色 */
+      }
+  
+      .messages {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-top: 10px;
+      }
+  
+      .content {
+        padding: 20px;
+      }
+    </style>
+    {% block extra_head %}
+    {% endblock extra_head %}
+  </head>
+  <body>
+    {% block body %}
+
+    {% if messages %}
+    <div>
+      <strong>{% trans "Messages:" %}</strong>
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div>
+      <strong>{% trans "Menu:" %}</strong>
+      <ul>
+        {% if user.is_authenticated %}
+        <!-- <li><a href="{% url 'account_email' %}">{% trans "Change Email" %}</a></li> -->
+        <li><a href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>
+        {% else %}
+        <li><a href="{% url 'account_login' %}">{% trans "Sign In" %}</a></li>
+        <li><a href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% block content %}
+    {% endblock content %}
+    {% endblock body %}
+    {% block extra_body %}
+    {% endblock extra_body %}
+  </body>
+</html>

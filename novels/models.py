@@ -1,9 +1,21 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-class Test(models.Model):
-    question_text = models.CharField(max_length=200)
-    question_num = models.IntegerField()
+class ChosenNovels(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.CharField(max_length=200)
+    outline = models.TextField()
+    url = models.TextField() 
+    category = models.CharField(max_length=200)
+
+
+class Bookshelf(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    novel = models.ForeignKey(ChosenNovels, on_delete=models.CASCADE)
+    bookshelf = models.CharField(max_length=200)
+    folder = models.CharField(max_length=200)
+    url_page = models.IntegerField(blank=True, null=True)
 
 
 class TestNovel(models.Model):
@@ -18,10 +30,11 @@ class NovelsInfo(models.Model):
     outline = models.TextField()    
     category = models.CharField(max_length=200)
     tags = models.CharField(max_length=200)
-    words = models.IntegerField()
     year = models.IntegerField()
-    collectedCount = models.IntegerField()
     url = models.TextField()  
     website = models.CharField(max_length=200)
+    comment = models.IntegerField()
+    size = models.IntegerField()
+
                 
      

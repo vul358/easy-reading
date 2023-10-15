@@ -31,7 +31,7 @@ class TestDocument(Document):
 class NovelsDocument(Document):
     class Index:
         # Name of the Elasticsearch index
-        name = 'novels_info'
+        name = 'sto_novels_info'
         # See Elasticsearch Indices API reference for available settings
         settings = {'number_of_shards': 1,
                     'number_of_replicas': 1}
@@ -46,9 +46,9 @@ class NovelsDocument(Document):
             'outline',
             'category',
             'tags',
-            'words',
             'year',
-            'collectedCount',
             'url',
-            'website'
+            'website',
+            'comment',
+            'size',
         ]
