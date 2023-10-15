@@ -438,10 +438,24 @@ def daily_novel(request):
             }
             results.append(result) 
         if len(results) == 0:
-            not_found = [{ "message": "抱歉今日沒有新的完結佳作！"}]
-            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
-        else:
-            results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            s = NovelsDocument.search().sort({"date": {"order":"desc"}})
+            for hit in s[:10]:
+                result = {
+                    "title": hit.title,
+                    "author": hit.author,
+                    "tags": hit.tags,
+                    "outline": hit.outline,
+                    "url": hit.url,
+                    "category": hit.category,
+                    "year": hit.year,
+                    "size": hit.size,
+                    "date": hit.date,
+                }
+                results.append(result) 
+            # not_found = [{ "message": "抱歉今日沒有新的完結佳作！"}]
+            # results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+        # else:
+        results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         return results
 
 
