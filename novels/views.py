@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.http import JsonResponse 
+from django.http import JsonResponse
 from .models import ChosenNovels, Bookshelf
 from .documents import NovelsDocument
 from django.shortcuts import render
@@ -19,6 +20,8 @@ import base64
 
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect(reverse('index'))
     return render(request, 'home.html')
 
 @login_required
@@ -506,7 +509,7 @@ def bookshelf_url(request):
         user_name = request.GET['user_name']
         encoded_data = f"{user_id}:{user_name}".encode("utf-8")
         encoded_data = base64.urlsafe_b64encode(encoded_data).decode("utf-8")
-        result = {'bookshelf_url': f"https://novel.likedream.life/novels/bookshelf_share/{encoded_data}"}
+        result = {'bookshelf_url': f"/novels/bookshelf_share/{encoded_data}"}
         return JsonResponse(result, status = 200, safe=False)
 
 
