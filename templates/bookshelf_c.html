@@ -120,7 +120,8 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" >使用說明</a>
+                <!-- <a tabindex="0" class="btn btn-lg btn-danger" role="button" data-bs-toggle="popover" data-bs-trigger="focus" title="Dismissible popover" data-bs-content="And here's some amazing content. It's very engaging. Right?">Dismissible popover</a> -->
+                <a tabindex="0" class="nav-link active intro" aria-current="page" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="新增資料夾後，放入書本：建立成功！刪除資料夾：將所有書本移出資料夾並重整頁面。">使用說明</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'account_logout' %}">登出</a>
@@ -137,7 +138,7 @@
     </p>
 
     <div class="centered-title">
-        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="連結已複製" id="shelfButton">分享我的書櫃 ʕ⸝⸝⸝˙Ⱉ˙ʔ *｡</button>
+        <a type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="連結已複製" id="shelfButton">分享我的書櫃 ʕ⸝⸝⸝˙Ⱉ˙ʔ *｡</a>
     </div>
        
     <div class="main-container container text-center">
@@ -412,6 +413,9 @@
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl)
         })
+        new bootstrap.Popover(document.querySelector('.intro'), {
+            trigger: 'focus'
+        })
 
         function shareBookShelf(user_id, user_name){
             fetch("/novels/bookshelf_url?user_id=" + user_id + "&user_name=" + user_name)
@@ -420,7 +424,7 @@
                 let bookshelfURL = data['bookshelf_url'];
                 const shelfButton = document.getElementById('shelfButton');
                 shelfButton.setAttribute('data-bs-content', bookshelfURL);
-                var popover = new bootstrap.Popover(shelfButton,{
+                const popover = new bootstrap.Popover(shelfButton,{
                     content:`<a href="${bookshelfURL}" target="_blank">前往預覽</a>`,
                     html: true
                 });
