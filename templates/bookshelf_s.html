@@ -209,6 +209,9 @@
                 </div>
             </div>`;
             container.appendChild(bookLi);
+            if (book.url_page){
+                fetchUrl(book.url_page, book.id);
+            }
         };
         function createFolder (bookshelfElement, folderName) {
             const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, '')}`
@@ -375,18 +378,18 @@
             }
         }
 
-        // function fetchUrl(page, novel_id) {
-        //     fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
-        //     .then(resp => resp.json())
-        //     .then(data => newUrl(data['url'], novel_id))
-        //     .catch(error => console.error("Error fetching products:", error));
-        // }
+        function fetchUrl(page, novel_id) {
+            fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
+            .then(resp => resp.json())
+            .then(data => newUrl(data['url'], novel_id))
+            .catch(error => console.error("Error fetching products:", error));
+        }
 
-        // function newUrl(url, novel_id) {
-        //     const elId = `${novel_id}_url`;
-        //     const el = document.getElementById(elId);
-        //     el.href = url;
-        // }
+        function newUrl(url, novel_id) {
+            const elId = `${novel_id}_url`;
+            const el = document.getElementById(elId);
+            el.href = url;
+        }
 
 
     </script>
