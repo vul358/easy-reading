@@ -192,6 +192,52 @@ def search_author(request):
             return results
 
 
+def search_title(request):
+    if request.method == 'GET':
+        title = request.GET['title']
+        not_found = [{ 
+                        "message": f"抱歉書庫中尚未有您在尋找的作品。小提醒：作品名稱為繁體中文比對，且建議輸入完整書名。" 
+                    }]
+        if title:
+            title_query = Q('match', title=title)
+            s = NovelsDocument.search().query('bool',  must=[title_query])
+            results = []
+            for hit in s[:3]:
+                if hit.tags == "":
+                    result = {
+                        "title": hit.title,
+                        "author": hit.author,
+                        "outline": hit.outline,
+                        "url": hit.url,
+                        "category": hit.category,
+                        "year": hit.year,
+                        "size": hit.size,
+                        "date": hit.date,
+                    }
+                else:
+                    result = {
+                        "title": hit.title,
+                        "author": hit.author,
+                        "tags": hit.tags,
+                        "outline": hit.outline,
+                        "url": hit.url,
+                        "category": hit.category,
+                        "year": hit.year,
+                        "size": hit.size,
+                        "date": hit.date,
+                    }
+                results.append(result)
+            if len(results) == 0:                  
+                    results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+                    return results
+            else:
+                results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+                return results
+        else:
+            results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
+            return results
+
+
 def search_category(request):
     if request.method == 'GET':
         category = request.GET['category']

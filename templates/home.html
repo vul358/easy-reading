@@ -123,14 +123,12 @@
   </p>
   
   <div class="col-6">
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">喜歡的文</span>
-    <input type="text" id="title" class="form-control" placeholder="輸入種子小說書名" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
-  </div>
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon2">喜歡的作者</span>
-    <input type="text" id="author" class="form-control" placeholder="輸入種子小說作者" aria-label="輸入種子小說作者" aria-describedby="basic-addon1">
-  </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">找書名</span>
+      <input type="text" id="title" class="form-control" placeholder="選填" aria-label="輸入種子小說書名" aria-describedby="basic-addon1">
+      <span class="input-group-text" id="basic-addon2">找作者</span>
+      <input type="text" id="author" class="form-control" placeholder="選填" aria-label="輸入種子小說作者" aria-describedby="basic-addon1">
+    </div>
 </div>
 <div class="col-6">
   <div class="input-group mb-3">
@@ -152,8 +150,8 @@
       <option>其它</option>
     </select>
 
-    <label class="input-group-text" for="inputGroupSelect01">選取或輸入一個標籤</label>
-    <input type="text" id="input0" list="tag" class="form-select">
+    <label class="input-group-text" for="inputGroupSelect01" >選取或輸入一個標籤</label>
+    <input type="text" id="input0" list="tag" class="form-select" placeholder="選填">
     <datalist id="tag">
       <option selected>快穿</option>
 　　   <option>爽文</option>
@@ -168,31 +166,38 @@
       <option>直播</option>
       <option>火葬場</option>
       <option>破鏡重圓</option>
-      <option>天作之合
-      </option>
+      <option>宮廷</option>
+      <option>美食</option>
+      <option>天作之合</option>
     </datalist>
-    <button type="button" id="search_0" class="btn btn-secondary">找好文</button>
+    <button type="button" id="search_0" class="btn btn-outline-secondary">找好文</button>
   </div>
 </div>
-      <span class="badge bg-secondary"><h5>同作者的其他作品</h5></span>
-      <div id="novels">
-      </div>
-    <br>
-    <span class="badge bg-secondary"><h5>同類別的推薦作品</h5></span>
-      <div id="categories">
-      </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="col-6">
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
-      <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
-      <button type="button" id="search" class="btn btn-secondary" >登登登</button>
-    </div>
-    </div>
-    <div id="books"></div>
+<hr>
+<div class="col-6">
+  <div class="input-group mb-3" >
+    <span class="input-group-text" id="basic-addon1">給我一點小驚喜</span>
+    <input type="text" id="term" class="form-control" placeholder="[隨意輸入劇情關鍵字]" aria-label="關鍵字" aria-describedby="basic-addon1">
+    <button type="button" id="search" class="btn btn-outline-success" >登登登</button>
+  </div>
+  <div id="appendalert" style="display: grid;"></div>
+  </div>
+
+  <hr/>
+  <span class="badge bg-secondary"><h5><small>書名比對結果</small></h5></span>
+  <div id="theOne"></div>
+  <br>
+  <span class="badge bg-secondary"><h5><small>作者搜尋結果</small></h5></span>
+  <div id="novels">
+  </div>
+<br>
+<span class="badge bg-secondary"><h5><small>同類別的推薦作品</small></h5></span>
+  <div id="categories">
+  </div>
+<br>
+<span class="badge bg-success"><h5><small>小驚喜</small></h5></span>
+<div id="books"></div>
+
 
 
     <script>
@@ -236,7 +241,7 @@
           })};
           
       alertLogin("test", "setence");
-      alertLogin("search","books");
+      alertLogin("search","appendalert");
       function insertBooks(data, divID) {
         const booksContainer = document.getElementById(divID);
         booksContainer.innerHTML = ""; // Clear previous books
@@ -398,9 +403,13 @@
 
     const search_book = document.getElementById("search_0");
     search_book.addEventListener("click", () => {
+        const category = document.getElementById("category").value;
         const author = document.getElementById("author").value;
         const title = document.getElementById("title").value;
-        fetchNovels(author, title)
+        const tag = document.getElementById("input0").value;
+        fetchNovels(author, title);
+        fetchCategories(category, tag, title);
+        fetchTitle(title);
     })
 
 
@@ -411,13 +420,12 @@
         .catch(error => console.error("Error fetching products:", error));
     }
 
-    const search_category = document.getElementById("search_0");
-    search_category.addEventListener("click", () => {
-        const category = document.getElementById("category").value;
-        const tag = document.getElementById("input0").value;
-        const title = document.getElementById("title").value;
-        fetchCategories(category, tag, title)
-    })
+    function fetchTitle(title){
+      fetch("/novels/search_title?title=" + encodeURIComponent(title))
+      .then(resp => resp.json())
+      .then(data => insertBooks(data, "theOne"))
+      .catch(error => console.error("Error fetching products:", error));
+    }
   
     </script>
   </div>
