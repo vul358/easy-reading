@@ -133,7 +133,7 @@ def search_novel(request):
                 }
             results.append(result) 
         if len(results) == 0:
-            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，目前只接受繁體中文關鍵字，建議檢視您的輸入字詞，年份與閱讀時間設定，移除部分限制再嘗試一次。"}]
+            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，目前只接受繁體中文關鍵字，建議檢視您的輸入字詞，年份與閱讀時間設定，移除部分限制再嘗試一次。小提醒：已加入書櫃/黑名單的書籍不會出現在搜尋結果唷。"}]
             results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
         else:
             results = JsonResponse(results, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -150,13 +150,13 @@ def search_author(request):
         author_query = Q('match', author = author)
         year_query = Q() if not year else Q('match', year=year)
         range_query = transfer_size(size)
-        # if user:
-        #     exclude_titles = exclude_novels(user)
-        #     if len(exclude_titles) > 0:
-        #         title_query = [Q('match', title_kw=title) for title in exclude_titles]
-        #         s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
-        # else:
-        s = NovelsDocument.search().query('bool',  must=[author_query, year_query])
+        if user:
+             exclude_titles = exclude_novels(user)
+             if len(exclude_titles) > 0:
+                 title_query = [Q('match', title_kw=title) for title in exclude_titles]
+                 s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
+        else:
+             s = NovelsDocument.search().query('bool',  must=[author_query, year_query])
         s = s.query(range_query)
         results = []
         for hit in s:
@@ -186,7 +186,7 @@ def search_author(request):
             results.append(result)
         if len(results) == 0:
                 not_found = [{ 
-                    "message": f"抱歉書庫中尚未有{author}其他作品。小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試。" 
+                    "message": f"抱歉書庫中尚未有{author}其他作品。小提醒：作者名稱為繁體中文完全比對，請確認輸入完整字數嘗試。推薦設定與黑名單也會影響搜尋結果唷。" 
                    }]
                 results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
                 return results
@@ -198,12 +198,18 @@ def search_author(request):
 def search_title(request):
     if request.method == 'GET':
         title = request.GET['title']
+        user = request.GET.get('user_id','')
         not_found = [{ 
-                        "message": f"抱歉書庫中尚未有您在尋找的作品。小提醒：作品名稱為繁體中文比對，且建議輸入完整書名。" 
+                        "message": f"抱歉書庫中尚未有您在尋找的作品。小提醒：作品名稱為繁體中文比對，且建議輸入完整書名。小提醒：已加入書櫃/黑名單的書籍不會出現在搜尋結果唷。" 
                     }]
         if title:
             title_query = Q('match', title=title)
-            s = NovelsDocument.search().query('bool',  must=[title_query])
+            if user:
+                exclude_titles = exclude_novels(user)
+                title_exclude_query = [Q('match', title_kw=title) for title in exclude_titles]
+                s = NovelsDocument.search().query('bool',  must=[title_query], must_not=title_exclude_query)
+            else:
+                s = NovelsDocument.search().query('bool',  must=[title_query])
             results = []
             for hit in s[:3]:
                 if hit.tags == "":
@@ -294,7 +300,7 @@ def search_category(request):
                     }
             results.append(result)
         if len(results) == 0:
-            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，建議檢視您的年份與閱讀時間設定，移除部分限制再嘗試一次。"}]
+            not_found = [{ "message": "抱歉書庫中尚未有符合條件的作品，建議檢視您的標籤，年份與閱讀時間設定，移除部分限制再嘗試一次。"}]
             results = JsonResponse(not_found, status = 200, safe=False, json_dumps_params={'ensure_ascii': False})
             return results  
         else:

@@ -409,7 +409,7 @@
     }
 
     function fetchTitle(title){
-      fetch("/novels/search_title?title=" + encodeURIComponent(title))
+      fetch("/novels/search_title?title=" + encodeURIComponent(title)+ "&user_id=" + user)
       .then(resp => resp.json())
       .then(data => insertBooks(data, "theOne"))
       .catch(error => console.error("Error fetching products:", error));
