@@ -523,7 +523,7 @@ def bookshelf_url(request):
         user_name = request.GET['user_name']
         encoded_data = f"{user_id}:{user_name}".encode("utf-8")
         encoded_data = base64.urlsafe_b64encode(encoded_data).decode("utf-8")
-        result = {'bookshelf_url': f"/novels/bookshelf_share/{encoded_data}"}
+        result = {'bookshelf_url': f"https://novel.likedream.life/novels/bookshelf_share/{encoded_data}"}
         return JsonResponse(result, status = 200, safe=False)
 
 
