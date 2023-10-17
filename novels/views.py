@@ -151,10 +151,9 @@ def search_author(request):
         year_query = Q() if not year else Q('match', year=year)
         range_query = transfer_size(size)
         if user:
-             exclude_titles = exclude_novels(user)
-             if len(exclude_titles) > 0:
-                 title_query = [Q('match', title_kw=title) for title in exclude_titles]
-                 s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
+            exclude_titles = exclude_novels(user)
+            title_query = [Q('match', title_kw=title) for title in exclude_titles]
+            s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
         else:
              s = NovelsDocument.search().query('bool',  must=[author_query, year_query])
         s = s.query(range_query)
