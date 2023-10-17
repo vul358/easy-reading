@@ -153,10 +153,11 @@ def search_author(request):
         if user:
             exclude_titles = exclude_novels(user)
             title_query = [Q('match', title_kw=title) for title in exclude_titles]
-            s = NovelsDocument.search().query('bool',  must=[author_query, year_query], must_not=title_query)
+            s = NovelsDocument.search().query('bool',  must=[author_query], must_not=title_query)
+            s = NovelsDocument.search().query('bool',  must=[author_query], must_not=title_query)
         else:
-             s = NovelsDocument.search().query('bool',  must=[author_query, year_query])
-        s = s.query(range_query)
+             s = NovelsDocument.search().query('bool',  must=[author_query])
+        # s = s.query(range_query)
         results = []
         for hit in s:
             if hit.tags == "":
