@@ -25,5 +25,5 @@ urlpatterns = [
     # path('favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')), # django-allauth網址
-    path('/health', views.health_check, name='health_check'),
+    path('health', views.health_check, name='health_check'),
 ]

@@ -28,13 +28,15 @@ secret_key = os.getenv('DJANGO_SECRET_KEY')
 SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'novel.likedream.life',
     'likedream.life',
     'localhost',
     '35.74.46.248',
+    '10.0.11.124',
+    '43.206.156.66',
     # '127.0.0.1'
 ]
 
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'novels.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,14 +131,15 @@ from elasticsearch import RequestsHttpConnection
 es_host = os.getenv('ES_host')
 es_usr = os.getenv('ES_usr')
 es_psw = os.getenv('ES_psw')
+ec_cert = os.getenv('EC_cert')
 
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': es_host,  # Elasticsearch服务器的地址
-        'use_ssl': True,
+        'use_ssl': False,
         'http_auth': (es_usr, es_psw),
-        'verify_certs': False,
-        'ca_certs': None,
+        'verify_certs': True,
+        'ca_certs': ec_cert,
         "connection_class": RequestsHttpConnection
     },
 }
