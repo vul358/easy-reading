@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     '35.74.46.248',
     '10.0.11.124',
     '43.206.156.66',
-    # '127.0.0.1'
+    '127.0.0.1'
 ]
 
 # Application definition
@@ -65,7 +65,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -135,7 +134,7 @@ ec_cert = os.getenv('EC_cert')
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': es_host,  # Elasticsearch服务器的地址
+        'hosts': es_host,  
         'use_ssl': False,
         'http_auth': (es_usr, es_psw),
         'verify_certs': True,
@@ -187,14 +186,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/novels/'  # 登入後的首頁網址
+LOGIN_REDIRECT_URL = '/novels/'  
 LOGOUT_REDIRECT_URL = '/novels/home'
 
 # All Authentication
-SOCIALACCOUNT_QUERY_EMAIL = True # 讓google登入的email也記錄至auth_User table
+SOCIALACCOUNT_QUERY_EMAIL = True # record email from user login with google to auth_User table
 ACCOUNT_EMAIL_REQUIRED= True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
-ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-# # settings.py
-# CSRF_COOKIE_SECURE = False

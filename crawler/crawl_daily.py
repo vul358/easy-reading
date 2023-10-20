@@ -152,7 +152,8 @@ def get_sto_category(html_content):
 
 
 def get_sto_page_url():
-    links = get_sto_category(get_content("https://www.sto.cx/sbn.aspx?c=0"))
+    start_page = "https://www.sto.cx/sbn.aspx?c=0"
+    links = get_sto_category(get_content(start_page))
     for link in links:
         i = 1
         while True:
