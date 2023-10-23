@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.3/dragula.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.3/dragula.min.js"></script>
     <style>
         .sheives {
             margin-top: 20px;
@@ -123,7 +123,6 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <!-- <a tabindex="0" class="btn btn-lg btn-danger" role="button" data-bs-toggle="popover" data-bs-trigger="focus" title="Dismissible popover" data-bs-content="And here's some amazing content. It's very engaging. Right?">Dismissible popover</a> -->
                 <a tabindex="0" class="nav-link active intro" aria-current="page" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="新增資料夾後，放入書本：建立成功！刪除資料夾：將所有書本移出資料夾並重整頁面。">使用說明</a>
               </li>
               <li class="nav-item">
@@ -185,17 +184,17 @@
         </ul>
     </div>
     <script>
-        const user_id = '{{user_id}}';
-        const user_name = '{{user_name}}';
+        const user_id = "{{user_id}}";
+        const user_name = "{{user_name}}";
 
         let drake;
         let _bookshelfStatus = 0
         function getContainers () {
-            return document.querySelectorAll('.shelf-container:not(#done), .folder-container');
+            return document.querySelectorAll(".shelf-container:not(#done), .folder-container");
         };
         function displayBook (book, container) {
-            const bookLi = document.createElement('li');
-            bookLi.className = 'book'
+            const bookLi = document.createElement("li");
+            bookLi.className = "book"
             bookLi.setAttribute("data-title", book.title);
             bookLi.setAttribute("data-author", book.author);
             bookLi.setAttribute("data-outline", book.outline);
@@ -230,7 +229,7 @@
             }
         };
         function createFolder (bookshelfElement, folderName) {
-            const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, '')}`
+            const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, "")}`
             let folder = document.getElementById(folderId);
             if (!folder) {
                 bookshelfElement.innerHTML += `
@@ -249,7 +248,7 @@
             .then(response => response.json())
             .then(data => {
                 Object.entries(data).map(([folder, books]) => {
-                    if (folder === 'no_folder') {
+                    if (folder === "no_folder") {
                         books.forEach(book => displayBook(book, bookshelfElement));
                     } else {
                         const folderElement = createFolder(bookshelfElement, folder);
@@ -258,17 +257,17 @@
                 _bookshelfStatus += 1;
             })
             .catch(error => {
-                console.error('獲取數據時出現錯誤:', error);
+                console.error("獲取數據時出現錯誤:", error);
             });
         }
         function addFolder(inputId) {
             const $input = document.getElementById(inputId)
             const folderName = $input.value
             if (folderName.length > 0) {
-                const shelfName = $input.id.split('-')[0]
+                const shelfName = $input.id.split("-")[0]
                 const $shelf = document.getElementById(shelfName)
                 createFolder($shelf, folderName);
-                $input.value = ''
+                $input.value = ""
                 drake.containers.splice()
                 getContainers().forEach(c => { drake.containers.push(c) })
             }
@@ -314,7 +313,7 @@
                     } else { return true }
                 },
                 removeOnSpill: false,
-            }).on('drop', (el, target, source) => {
+            }).on("drop", (el, target, source) => {
                 let folderName;
                 if (target.className.match(/folder-container/)) {
                     folderName = target.dataset.name
@@ -324,7 +323,7 @@
                 // check which bookshelf to move
                 let bookshelfId;
                 if (folderName) {
-                    bookshelfId = target.closest('.shelf-container').id;
+                    bookshelfId = target.closest(".shelf-container").id;
                 } else {
                     bookshelfId = target.id;
                 }
@@ -346,9 +345,9 @@
                 setTimeout(bindPageUpdate, 500);
                 return;
             }
-            const updateUrl = document.querySelectorAll('.update');
+            const updateUrl = document.querySelectorAll(".update");
             updateUrl.forEach(update => {
-                update.addEventListener('click', () => {
+                update.addEventListener("click", () => {
                     const page = update.previousElementSibling.value;
                     const novel_id = update.dataset.id;
                     fetchUrl(page, novel_id);
@@ -383,25 +382,25 @@
         }
 
         function checkBook(data){
-            const clearRed = document.querySelectorAll('strong');
-            clearRed.forEach(clear => {clear.className = ''});
-            if (data['book_id']){
-                const clearRed = document.querySelectorAll('strong');
-                clearRed.forEach(clear => {clear.className = ''});
-                const bookID = `book_${data['book_id']}`;
+            const clearRed = document.querySelectorAll("strong");
+            clearRed.forEach(clear => {clear.className = ""});
+            if (data["book_id"]){
+                const clearRed = document.querySelectorAll("strong");
+                clearRed.forEach(clear => {clear.className = ""});
+                const bookID = `book_${data["book_id"]}`;
                 const theBook =  document.querySelector(`#${bookID} strong`);
-                theBook.className = 'red';   
+                theBook.className = "red";   
             }
             else {
                 const searchbar = document.getElementById("searchTitle");
-                searchbar.value = data['message'];
+                searchbar.value = data["message"];
             }
         }
 
         function fetchUrl(page, novel_id) {
             fetch("/novels/update_url/?user_id=" + user_id + "&book_id=" + novel_id + "&page=" + page)
             .then(resp => resp.json())
-            .then(data => newUrl(data['url'], novel_id))
+            .then(data => newUrl(data["url"], novel_id))
             .catch(error => console.error("Error fetching products:", error));
         }
 
@@ -411,32 +410,32 @@
             el.href = url;
         }
 
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverTriggerList = [].slice.call(document.querySelectorAll("[data-bs-toggle='popover']"))
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl)
         })
-        new bootstrap.Popover(document.querySelector('.intro'), {
-            trigger: 'focus'
+        new bootstrap.Popover(document.querySelector(".intro"), {
+            trigger: "focus"
         })
 
         function shareBookShelf(user_id, user_name){
             fetch("/novels/bookshelf_url?user_id=" + user_id + "&user_name=" + user_name)
             .then(resp => resp.json())
             .then(data => {
-                let bookshelfURL = data['bookshelf_url'];
-                const shelfButton = document.getElementById('shelfButton');
-                shelfButton.setAttribute('data-bs-content', bookshelfURL);
+                let bookshelfURL = data["bookshelf_url"];
+                const shelfButton = document.getElementById("shelfButton");
+                shelfButton.setAttribute("data-bs-content", bookshelfURL);
                 const popover = new bootstrap.Popover(shelfButton,{
                     content:`<a href="${bookshelfURL}" target="_blank">前往預覽</a>`,
                     html: true
                 });
                 
-                shelfButton.addEventListener('click', function() {
-                var textArea = document.createElement('textarea');
+                shelfButton.addEventListener("click", function() {
+                var textArea = document.createElement("textarea");
                 textArea.value = bookshelfURL;
                 document.body.appendChild(textArea);
                 textArea.select();
-                document.execCommand('copy');
+                document.execCommand("copy");
                 document.body.removeChild(textArea);
             });
 
@@ -445,31 +444,6 @@
         }
 
         shareBookShelf(user_id, user_name);
-
-        
-
-    //     const shelfButton = document.getElementById('shelfButton');
-    //     shelfButton.setAttribute('data-bs-content', bookshelfURL);
-    //     var popover = new bootstrap.Popover(shelfButton,{
-    //         content:`<a href="${bookshelfURL}" id="copyButton">${bookshelfURL}</a>`,
-    //         html: true
-    //     });
-    //     setTimeout(function () {
-    //     var copyButton = document.getElementById('copyButton');
-    //     if (copyButton) {
-    //         // 复制按钮的点击事件
-    //         copyButton.addEventListener('click', function() {
-    //         var textArea = document.createElement('textarea');
-    //         textArea.value = bookshelfURL;
-    //         document.body.appendChild(textArea);
-    //         textArea.select();
-    //         document.execCommand('copy');
-    //         document.body.removeChild(textArea);
-    //         alert('書櫃連結已複製！');
-    //     });
-            
-    //     }
-    // }, 0);
 
     </script>
 </body>
