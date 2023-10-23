@@ -1,0 +1,70 @@
+.page-content {
+    margin: 20px; 
+}
+
+.novel {
+border: 1px solid #ccc;
+margin: 10px;
+padding: 10px;
+background-color: #f9f9f9;
+}
+
+.title {
+font-size: 1.5rem;
+font-weight: bold;
+margin-bottom: 5px;
+}
+
+.year {
+font-size: 1rem;
+color: #666;
+font-weight: normal;
+margin-bottom: 10px;
+float: right;
+}
+
+
+.author {
+font-size: 1rem;
+color: #666;
+margin-bottom: 10px;
+}
+.size {
+font-size: 0.8rem;
+float: right;
+}
+
+
+.category {
+font-size: 1rem;
+font-weight: bold;
+margin-bottom: 10px;
+}
+
+.tags {
+font-size: 0.8rem;
+color: #888;
+margin-bottom: 5px;
+}
+
+.outline {
+font-size: 1rem;
+margin-bottom: 15px;
+}
+
+.url {
+font-size: 1rem;
+text-decoration: none;
+color: #007bff;
+}
+
+.bi {
+font-size: 1.5rem;
+margin-right: 5px;
+cursor: pointer;
+color: #f39c12;
+}
+
+.bi:hover {
+color: #e74c3c;
+}

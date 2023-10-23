@@ -252,13 +252,8 @@
                     if (folder === 'no_folder') {
                         books.forEach(book => displayBook(book, bookshelfElement));
                     } else {
-                        // if (folder === 'folder-good' || folder === 'folder-bad' || folder === 'folder_noraml') {
-                        //     const folderExist = getElementById(folder);
-                        //     books.forEach(book => displayBook(book, folderExist));
-                        // } else {
                         const folderElement = createFolder(bookshelfElement, folder);
                         books.forEach(book => displayBook(book, folderElement));
-                    // }
                 }});
                 _bookshelfStatus += 1;
             })
@@ -311,7 +306,11 @@
                 accepts: function (el, target, source, sibling) {
                     if (/folder/.test(el.className)) {
                         const belongs = el.className.match(/\w+-shelf/).pop()
-                        return belongs.startsWith(target.id) && !/folder/.test(target.className) ? true : false
+                        if (belongs.startsWith(target.id) && !/folder/.test(target.className)){
+                            return true
+                        } else {
+                            return false
+                        }
                     } else { return true }
                 },
                 removeOnSpill: false,

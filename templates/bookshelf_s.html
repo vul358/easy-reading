@@ -147,10 +147,6 @@
             <li id="reading-shelf" class="shelf col list-group-item">
                 <div class="shelf-header list-group-item list-group-item-warning"><h4>閱讀中</h4></div>
                 <ul id="reading" class="shelf-container list-group col"></ul>
-                <div class="shelf-button input-group mb-6">
-                    <input type="text" id="reading-shelf-append-folder" class="form-control" placeholder="New Folder Name" />
-                    <button class="button btn btn-outline-secondary" type="button" onClick="addFolder('reading-shelf-append-folder')">Add</button>
-                </div>
             </li>
             <li id="done-shelf" class="shelf col list-group-item">
                 <div class="shelf-header list-group-item list-group-item-success"><h4>已閱畢</h4></div>
@@ -216,19 +212,8 @@
                 fetchUrl(book.url_page, book.id);
             }
         };
-        function createFolder (bookshelfElement, folderName) {
-            const folderId = `folder-${encodeURIComponent(folderName).replace(/%/g, '')}`
-            let folder = document.getElementById(folderId);
-            if (!folder) {
-                bookshelfElement.innerHTML += `
-                <li class="folder ${bookshelfElement.id}-shelf list-group-item">
-                    <div class="folder-header col"><h5>${folderName}</h5></div>
-                    <ul id="${folderId}" class="folder-container" data-name="${folderName}"></ul>
-                </li>`;
-                folder = document.getElementById(folderId);
-            }
-            return folder;
-        }
+
+
         function loadBooks (bookshelf, userId) {
             const bookshelfElement = document.getElementById(bookshelf);
             const api = `/novels/bookshelfs/?bookshelf=${encodeURIComponent(bookshelf)}&user_id=${encodeURIComponent(userId)}`;
@@ -248,105 +233,13 @@
                 console.error('獲取數據時出現錯誤:', error);
             });
         }
-        // function addFolder(inputId) {
-        //     const $input = document.getElementById(inputId)
-        //     const folderName = $input.value
-        //     if (folderName.length > 0) {
-        //         const shelfName = $input.id.split('-')[0]
-        //         const $shelf = document.getElementById(shelfName)
-        //         createFolder($shelf, folderName);
-        //         $input.value = ''
-        //         drake.containers.splice()
-        //         getContainers().forEach(c => { drake.containers.push(c) })
-        //     }
-        // }
-        // function markBook (data) {
-        //     const api = "/novels/mark/";
-        //     fetch(api, {
-        //         method: "POST",
-        //         body: JSON.stringify(data),
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //     })
-        //     .then(response => {
-        //         if(!response.ok){
-        //             throw new Error("Network response was not ok");
-        //         }
-        //         return response.json();
-        //     })
-        //     .then(data => {
-        //         console.log(data);
-        //     })
-        //     .catch(error => {
-        //         console.error("There was a problem with the fetch operation:", error);
-        //     });
-        // }
-        // function startDragula () {
-        //     if (_bookshelfStatus < 4) {
-        //         setTimeout(startDragula, 500);
-        //         return;
-        //     }
-        //     const containers = [];
-        //     getContainers().forEach(container => { containers.push(container); });
-        //     drake = dragula(containers, {
-        //         accepts: function (el, target, source, sibling) {
-        //             if (/folder/.test(el.className)) {
-        //                 const belongs = el.className.match(/\w+-shelf/).pop()
-        //                 return belongs.startsWith(target.id) && !/folder/.test(target.className) ? true : false
-        //             } else { return true }
-        //         },
-        //         removeOnSpill: false,
-        //     }).on('drop', (el, target, source) => {
-        //         let folderName;
-        //         if (target.className.match(/folder-container/)) {
-        //             folderName = target.dataset.name
-        //         } else {
-        //             folderName = null;
-        //         }
-        //         // check which bookshelf to move
-        //         let bookshelfId;
-        //         if (folderName) {
-        //             bookshelfId = target.closest('.shelf-container').id;
-        //         } else {
-        //             bookshelfId = target.id;
-        //         }
-        //         const data = {
-        //             "user_id": user_id,
-        //             "bookshelf": bookshelfId,
-        //             "title": el.dataset.title,
-        //             "author": el.dataset.author,
-        //             "outline": el.dataset.outline,
-        //             "url": el.dataset.url,
-        //             "category": el.dataset.category,
-        //             "folder": folderName,
-        //         };
-        //         markBook(data);
-        //     })
-        // };
-        // function bindPageUpdate () {
-        //     if (_bookshelfStatus < 4) {
-        //         setTimeout(bindPageUpdate, 500);
-        //         return;
-        //     }
-        //     const updateUrl = document.querySelectorAll('.update');
-        //     updateUrl.forEach(update => {
-        //         update.addEventListener('click', () => {
-        //             const page = update.previousElementSibling.value;
-        //             const novel_id = update.dataset.id;
-        //             fetchUrl(page, novel_id);
-        //             update.previousElementSibling.value = "";
-        //             document.querySelector(`a[id="${novel_id}_url"] span`).innerHTML = page;
-        //         })
-        //     })
-        // }
+      
+
         function initialize () {
             loadBooks("pending", user_id);
             loadBooks("blocked", user_id);
             loadBooks("reading", user_id);
             loadBooks("done", user_id);
-            // startDragula();
-            // bindPageUpdate();
         }
         initialize();
 
