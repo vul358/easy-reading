@@ -12,9 +12,6 @@ urlpatterns = [
     path("mark/", views.mark, name="mark"),
     path("bookshelfs/", views.bookshelfs, name="bookshelfs"),
     path("my_bookshelf/", views.my_bookshelf, name="my_bookshelf"),
-    path("register/", views.register, name="register"),
-    path("login/", views.login, name="login"),
-    path("logout/", views.logout, name="logout"),
     path("daily/", views.daily, name="daily"),
     path("daily_novel/", views.daily_novel, name="daily_novel"),
     path("ranking/", views.ranking, name="ranking"),
@@ -23,5 +20,4 @@ urlpatterns = [
     path("bookshelf_share/<encoded_data>", views.bookshelf_share, name="bookshelf_share"),
     path("bookshelf_url", views.bookshelf_url, name="bookshelf_url"), 
     path("search_title/", views.search_title, name="search_title"),
-    path('favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
 ]

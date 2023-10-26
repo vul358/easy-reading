@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-es_host = os.getenv('ES_host')
-es_usr = os.getenv('ES_usr')
-es_psw = os.getenv('ES_psw')
-es_ssl = os.getenv('ES_ssl')
-es_cert = os.getenv('ES_cert')
+es_host = os.getenv("ES_host")
+es_usr = os.getenv("ES_usr")
+es_psw = os.getenv("ES_psw")
+es_ssl = os.getenv("ES_ssl")
+es_cert = os.getenv("ES_cert")
 
 
 es = Elasticsearch(
@@ -23,10 +23,10 @@ es = Elasticsearch(
 
 def create_index(es):
     body = dict()
-    body['settings'] = get_setting()
-    body['mappings'] = get_mappings()
+    body["settings"] = get_setting()
+    body["mappings"] = get_mappings()
     print(json.dumps(body)) #可以用json.dumps輸出來看格式有沒有包錯
-    es.indices.create(index='sto_novels_info', body=body)
+    es.indices.create(index="sto_novels_info", body=body)
 
 
 def get_setting():
@@ -82,6 +82,3 @@ def get_mappings():
 
 if __name__ == "__main__":
     create_index(es)
-    # result = es.indices.get(index='sto_novels_info') #index指定要get哪個index的資訊
-    # tryexist = es.indices.exists(index='sto_novels_info')
-    # print(tryexist)
