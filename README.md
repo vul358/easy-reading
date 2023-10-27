@@ -57,8 +57,11 @@
 ## Main Features
 ### Novels Search & Recommendation
 - Classic search function:
-![Search novel title will return the most similar 3 results.](https://github.com/vul358/assets/blob/main/search_title.png)
-![Search novel author will return all the match results.](hhttps://github.com/vul358/assets/blob/main/search_author.png)
+    - Search novel title will return the most similar 3 results.(Optional)
+    - Search novel author will return all the match results.(Optional)
+    - Recommend novels based on category chosen(default Romance) and tag chosen(Optional), return the most popular 3 compliant results.
+![](https://github.com/vul358/assets/blob/main/classic_search.gif)
+
 
 - Recommend based on keywords input by user
 - Star &. Ban button to add novels into bookshelf 
