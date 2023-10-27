@@ -97,7 +97,7 @@
 
 
 ## Author
-- Name: Jenny Hsiao [Github](https://github.com/vul358)
+- Name: [Jenny Hsiao](https://github.com/vul358)
 - Email: yujen1993@gmail.com
 
 
