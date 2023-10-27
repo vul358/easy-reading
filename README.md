@@ -1,7 +1,7 @@
 # Easy Reading
 #### A website for reading lovers to easily discover novels and use convenient bookshelf features.
-####  Website Link: https://novel.likedream.life/novels/home
-####  Demo Account: test / Password: 0101test
+####  🌐 Website Link: https://novel.likedream.life/novels/home
+####  📖 Demo Account: test / Password: 0101test
 
 
 ## Table of Content
