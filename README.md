@@ -50,7 +50,7 @@
 
 
 ## Architecture
-![](https://github.com/vul358/assets/blob/main/structure_updated.png)
+![](https://github.com/vul358/assets/blob/main/structure_new.png)
 
 
 ## Main Features
