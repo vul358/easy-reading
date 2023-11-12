@@ -14,7 +14,6 @@
 ## Technologies
 ### Back-End
 - Python
-- RESTful API
 - Linux
 - NGINX
 - Crontab
@@ -89,10 +88,10 @@
 
 
 ### Daily Update
-- List of Category Rankings, updated in realtime
+- List of Category Rankings
   ![](https://github.com/vul358/assets/blob/main/ranking.png)
   
-- Latest Launched Novels, updated daily
+- Latest Launched Novels
   ![](https://github.com/vul358/assets/blob/main/daily.png)
 
 
